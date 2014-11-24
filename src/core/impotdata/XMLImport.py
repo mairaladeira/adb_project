@@ -50,8 +50,8 @@ class XMLImport:
         i = 0
         try:
             for fd in table.findall('.//fd'):
-                dependency['left'] = self.get_attributes(fd.find('left'))
-                dependency['right'] = self.get_attributes(fd.find('right'))
+                dependency['lhs'] = self.get_attributes(fd.find('lhs'))
+                dependency['rhs'] = self.get_attributes(fd.find('rhs'))
                 fds[i] = dependency
                 i += 1
             if 0 == i:
