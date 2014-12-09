@@ -1,4 +1,4 @@
-adb_project
+ADB project
 ===========
 
 DBNormalizer
@@ -14,7 +14,7 @@ Source code for the Database Normalizer project for the Advanced Databases class
    * Kaiser Co,
    * Maira Machado Ladeira,
    * Mehreen Ikram
-   
+
 
 For execute the project with a visual interface (functionality coming soon):
 
