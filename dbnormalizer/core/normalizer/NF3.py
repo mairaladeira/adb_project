@@ -1,5 +1,5 @@
-from src.core.normalizer.NF import NF
-from src.core.normalizer.NF2 import NF2
+from dbnormalizer.core.normalizer.NF import NF
+from dbnormalizer.core.normalizer.NF2 import NF2
 
 __author__ = 'Maira'
 
@@ -9,7 +9,9 @@ class NF3(NF):
         super()
         self.nf2 = NF2
 
+
 def is3NF(fdsLHS,fdsRHS):
+
 
 #for 1st functional dependancy it will give TRUE as it is in 3NF A->B   A is a PK
 #for 2nd functional dependancy it will give FALSE as it is not in 3NF B->C and B is not PK   (these both are for same table)

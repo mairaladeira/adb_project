@@ -27,13 +27,13 @@ setup(
     name='dbnormalizer',
     version=dbnormalizer.__version__,
     url='https://github.com/mairaladeira/adb_project',
-    install_requires=['Flask>=0.10.1',
-                    'Flask-SQLAlchemy>=1.0',
-                    'SQLAlchemy==0.8.2',
+    install_requires=[
+                      'SQLAlchemy>=0.8.2',
+                      'pyparsing>=2.0.3',
                     ],
     description='Database Normalizer for the Advanced Databases Course of DMKM master',
     long_description=long_description,
-    packages=['dbnormalizer'],
+    packages=find_packages(),
     include_package_data=True,
     platforms='any',
     classifiers = [

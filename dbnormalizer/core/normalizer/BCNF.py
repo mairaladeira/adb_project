@@ -1,5 +1,5 @@
-from src.core.normalizer.NF import NF
-from src.core.normalizer.NF3 import NF3
+from dbnormalizer.core.normalizer.NF import NF
+from dbnormalizer.core.normalizer.NF3 import NF3
 
 __author__ = 'Maira'
 

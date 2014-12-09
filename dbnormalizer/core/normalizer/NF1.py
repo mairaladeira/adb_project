@@ -1,4 +1,4 @@
-from src.core.normalizer.NF import NF
+from dbnormalizer.core.normalizer.NF import NF
 
 __author__ = 'Maira'
 
