@@ -43,7 +43,6 @@ class XMLImport:
         except Exception as e:
             print('get_attributes' + e)
 
-
     def get_functional_dependencies(self, table):
         dependency = {}
         fds = {}
