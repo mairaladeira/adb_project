@@ -19,6 +19,7 @@ def is3NF(fdsLHS,fdsRHS):
             #fdsRHS ='b'
             #fdsLHS ='b'
             #fdsRHS ={'c','d'}
+            #fdsRHS ={'c','d'}
 
             candidateKeys={'a','e','f'}
             thirdNFviolaes = False
