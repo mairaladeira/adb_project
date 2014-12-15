@@ -24,8 +24,5 @@ fd3 = FD('a', {'b'})       #not voilated here
 fd4 = FD('b', {'c', 'd'})  # voilated here
 nf3 = NF3()
 
-fds = [fd3,fd4]
-print('3rd NF Violation :  ',nf3.is_nf3(fds))   #3NF violated
-
-#fds = [fd4]
-#print('3rd NF Violation for FD 4  ',nf3.is_nf3(fds))   #3NF violated
+fds = [fd4,fd3]
+print('Is it in 3rd NF? :  ',nf3.is_nf3(fds))   #3NF violated

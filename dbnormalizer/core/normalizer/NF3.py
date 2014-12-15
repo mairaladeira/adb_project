@@ -22,30 +22,23 @@ class NF3(NF):
 
     def is_nf3(self, fds):
         candidate_keys = {'a', 'e', 'f'}
-        third_nf_violates = False
-
         if not self.is_nf2:
             return False
         lhs_is_super_key = False
-
         try:
             for fd in fds:
                 lhs = fd.get_lhs
                 rhs = fd.get_rhs
                 for e in candidate_keys:
+                    lhs_is_super_key = False
                     if e == lhs:
                         lhs_is_super_key = True
 
                 if not lhs_is_super_key:
                     for r in rhs:
                         if not self.is_key_attribute(r):
-                            third_nf_violates = True
-                            print('third_nf_violates:',third_nf_violates,'lhs: ',lhs,'rhs: ',rhs,'r: ',r)
-                print('third_nf_violates for respv FD:',third_nf_violates,'lhss: ',lhs,'rhs: ',rhs)
-
+                            return False
+            return True
         except Exception as ex:
             print('violates_3NF excepion')
             print(ex)
-
-        return third_nf_violates
-
