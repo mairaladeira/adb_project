@@ -4,21 +4,12 @@ from dbnormalizer.core.normalizer.NF2 import NF2
 __author__ = 'Maira'
 
 
-def is_key_attribute(attribute):
-    is_key_attr = False
-    candidate_keys = {'a'}
-
-    for e in candidate_keys:
-            if e == attribute:
-                is_key_attr = True
-    return is_key_attr
-
-
 class NF3(NF):
     def __init__(self):
         super()
         self.nf2 = NF2
         self.is_nf2 = True
+        self.candidate_keys = {'a'}
 
     #for 1st functional dependency it will give TRUE as it is in 3NF A->B   A is a PK
     #for 2nd functional dependency it will give FALSE as it is not in 3NF B->C and B is not PK
@@ -43,7 +34,7 @@ class NF3(NF):
 
             if not lhs_is_super_key:
                 for r in fds_rhs:
-                    if not is_key_attribute(r):
+                    if not self.is_key_attribute(r):
                         third_nf_violates = True
 
         except Exception as ex:
