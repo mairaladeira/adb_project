@@ -19,10 +19,13 @@ from dbnormalizer.core.normalizer.NF3 import NF3
 #fds = [fd1, fd2]
 #print(fd1.get_lhs)
 
-fd3 = FD(['b'], ['c','d'])
-fd4 = FD(['a'], ['b'])
-fds = [fd3, fd4]
-print(fd3.get_lhs)
 
-print(NF3.is_nf3(fds))   #3NF violated
-#print('3rd NF Violation for A->B:    ', NF3.is_nf3('a', {'b'}));   #3NF not violated
+fd3 = FD('a', {'b'})       #not voilated here
+fd4 = FD('b', {'c', 'd'})  # voilated here
+nf3 = NF3()
+
+fds = [fd3]
+print('3rd NF Violation for FD 3  ',nf3.is_nf3(fds))   #3NF violated
+
+fds = [fd4]
+print('3rd NF Violation for FD 4  ',nf3.is_nf3(fds))   #3NF violated

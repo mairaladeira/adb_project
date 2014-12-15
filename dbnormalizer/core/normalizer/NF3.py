@@ -1,5 +1,6 @@
 from dbnormalizer.core.normalizer.NF import NF
 from dbnormalizer.core.normalizer.NF2 import NF2
+from dbnormalizer.core.table.FD import FD
 
 __author__ = 'Maira'
 
@@ -33,8 +34,8 @@ class NF3(NF):
                 lhs = fd.get_lhs
                 rhs = fd.get_rhs
                 for e in candidate_keys:
-                        if e == lhs:
-                            lhs_is_super_key = True
+                    if e == lhs:
+                        lhs_is_super_key = True
 
                 if not lhs_is_super_key:
                     for r in rhs:
