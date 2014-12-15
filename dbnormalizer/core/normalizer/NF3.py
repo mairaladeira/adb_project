@@ -41,7 +41,7 @@ class NF3(NF):
                         if not self.is_key_attribute(r):
                             third_nf_violates = True
                             print('third_nf_violates:',third_nf_violates,'lhs: ',lhs,'rhs: ',rhs,'r: ',r)
-                print('third_nf_violates for respv FD:',third_nf_violates,'lhs: ',lhs,'rhs: ',rhs)
+                print('third_nf_violates for respv FD:',third_nf_violates,'lhss: ',lhs,'rhs: ',rhs)
 
         except Exception as ex:
             print('violates_3NF excepion')
