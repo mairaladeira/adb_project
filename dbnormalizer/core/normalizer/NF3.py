@@ -18,22 +18,25 @@ class NF3(NF):
             #fdsRHS ='b'
             #fdsLHS ='b'
             #fdsRHS ={'c','d'}
-    def is_nf3(self, fds_lhs, fds_rhs):
+    def is_nf3(self, fds):
         candidate_keys = {'a', 'e', 'f'}
         third_nf_violates = False
         #fdsLHS=functional_dependencies.getLHS_dep();
         #fdsRHS=functional_dependencies.getRHS_dep();
+
+        lhs = fds.get_lhs()
+        rhs = fds.get_rhs()
         if not self.is_nf2:
             return False
         lhs_is_super_key = False
 
         try:
             for e in candidate_keys:
-                    if e == fds_lhs:
+                    if e == lhs:
                         lhs_is_super_key = True
 
             if not lhs_is_super_key:
-                for r in fds_rhs:
+                for r in rhs:
                     if not self.is_key_attribute(r):
                         third_nf_violates = True
 
