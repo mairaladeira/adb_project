@@ -11,12 +11,12 @@ class BCNF(NF):
         self.candidate_keys = {'pizza'}
 
     def is_bcnf(self, fds):
+        is_nf3 = NF3.is_nf3(fds)
+        if not is_nf3:
+            return False
         for fd in fds:
-            lhs = fds.get_lhs()
-            rhs = fds.get_rhs()
-            is_nf3 = NF3.is_nf3(lhs, rhs)
-            if not is_nf3:
-                return False
+            lhs = fd.get_lhs()
+            rhs = fd.get_rhs()
             for f in lhs:
                 if f not in self.candidate_keys:
                     return False

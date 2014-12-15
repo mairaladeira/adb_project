@@ -2,9 +2,9 @@ __author__ = 'Maira'
 
 
 class FD:
-    def __init__(self):
-        self.lhs = {}
-        self.rhs = {}
+    def __init__(self, lhs, rhs):
+        self.lhs = lhs
+        self.rhs = rhs
 
     def set_lhs(self, lhs):
         self.lhs = lhs
