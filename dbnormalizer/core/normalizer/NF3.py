@@ -12,25 +12,24 @@ class NF3(NF):
         self.is_nf2 = True
         self.candidate_keys = {'a'}
 
-    #for 1st functional dependency it will give TRUE as it is in 3NF A->B   A is a PK
-    #for 2nd functional dependency it will give FALSE as it is not in 3NF B->C and B is not PK
-    #(these both are for same table)
-            #fdsLHS ='a'
-            #fdsRHS ='b'
-            #fdsLHS ='b'
-            #fdsRHS ={'c','d'}
+        # for 1st functional dependency it will give TRUE as it is in 3NF A->B   A is a PK
+        #for 2nd functional dependency it will give FALSE as it is not in 3NF B->C and B is not PK
+        #(these both are for same table)
+        #fdsLHS ='a'
+        #fdsRHS ='b'
+        #fdsLHS ='b'
+        #fdsRHS ={'c','d'}
+
     def is_nf3(self, fds):
         candidate_keys = {'a', 'e', 'f'}
         third_nf_violates = False
-        #fdsLHS=functional_dependencies.getLHS_dep();
-        #fdsRHS=functional_dependencies.getRHS_dep(); #ff
 
         if not self.is_nf2:
             return False
         lhs_is_super_key = False
 
         try:
-           for fd in fds:
+            for fd in fds:
                 lhs = fd.get_lhs
                 rhs = fd.get_rhs
                 for e in candidate_keys:
@@ -41,6 +40,8 @@ class NF3(NF):
                     for r in rhs:
                         if not self.is_key_attribute(r):
                             third_nf_violates = True
+                            print('third_nf_violates:',third_nf_violates,'lhs: ',lhs,'rhs: ',rhs,'r: ',r)
+                print('third_nf_violates for respv FD:',third_nf_violates,'lhs: ',lhs,'rhs: ',rhs)
 
         except Exception as ex:
             print('violates_3NF excepion')
