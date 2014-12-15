@@ -1,7 +1,2 @@
 __author__ = 'Maira'
-from dbnormalizer.core.impotdata.XMLImport import XMLImport
-
-test = XMLImport('E:/Dropbox/DMKM/GitHub/adb_project/examples/test.xml')
-test.readfile()
-
-
+#Add here anything that needs to be initialized for the normalizer
