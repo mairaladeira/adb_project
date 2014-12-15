@@ -7,12 +7,11 @@ __author__ = 'Maira'
 class BCNF(NF):
     def __init__(self):
         super()
-        self.nf3 = NF3
+        self.nf3 = NF3()
         self.candidate_keys = {'pizza'}
 
     def is_bcnf(self, fds):
-        is_nf3 = NF3.is_nf3(fds)
-        if not is_nf3:
+        if not self.nf3.is_nf3(fds):
             return False
         for fd in fds:
             lhs = fd.get_lhs()

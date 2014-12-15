@@ -1,6 +1,5 @@
 from dbnormalizer.core.normalizer.NF import NF
 from dbnormalizer.core.normalizer.NF2 import NF2
-from dbnormalizer.core.table.FD import FD
 
 __author__ = 'Maira'
 

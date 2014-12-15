@@ -15,9 +15,13 @@ Source code for the Database Normalizer project for the Advanced Databases class
    * Maira Machado Ladeira,
    * Mehreen Ikram
 
+For install the project:
+```
+python setup.py install
+```
 
-For execute the project with a visual interface (functionality coming soon):
+For execute the project:
 
 ```
-python src/gui/__init__.py
+python dbnormalizer
 ```
