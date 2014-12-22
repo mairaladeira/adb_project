@@ -2,12 +2,9 @@ __author__ = 'Maira'
 
 
 class Attribute:
-    def __init__(self):
-        self.name = ''
-        self.type = ''
-
-    def set_name(self, name):
+    def __init__(self, name):
         self.name = name
+        self.type = ''
 
     def set_type(self, t):
         self.type = t

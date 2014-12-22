@@ -6,12 +6,6 @@ class FD:
         self.lhs = lhs
         self.rhs = rhs
 
-    def set_lhs(self, lhs):
-        self.lhs = lhs
-
-    def set_rhs(self, rhs):
-        self.rhs = rhs
-
     @property
     def get_lhs(self):
         return self.lhs

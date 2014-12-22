@@ -2,13 +2,12 @@ __author__ = 'Maira'
 
 
 class Table:
-    def __init__(self):
-        self.name = ''
-        self.attributes = {}
-        self.fds = {}
-
-    def set_name(self, name):
+    def __init__(self, name):
         self.name = name
+        #Table attributes will be a list of attribute objects
+        self.attributes = []
+        #Table fds will be a list of fd objects
+        self.fds = []
 
     def set_attributes(self, attributes):
         self.attributes = attributes
