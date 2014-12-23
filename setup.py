@@ -30,7 +30,7 @@ setup(
     install_requires=[
                       'SQLAlchemy>=0.8.2',
                       'pyparsing>=2.0.3',
-                      'PySide>=1.2.2',
+                      'flask>=0.10.1',
                     ],
     description='Database Normalizer for the Advanced Databases Course of DMKM master',
     long_description=long_description,

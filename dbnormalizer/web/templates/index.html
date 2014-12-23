@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>dbnormalizer</title>
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/default.css') }}">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/default.js') }}"></script>
+</head>
+<body>
+<div>
+    <div id="header">
+        <!-- Single button -->
+        <div class="btn-group btn-group-justified" role="group" aria-label="...">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                        aria-expanded="false">
+                    Insert Data <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#insertDBConnection" role="button" data-toggle="modal">New Database Connection</a></li>
+                    <li><a href="#insertXml" role="button" data-toggle="modal">Import XML File</a></li>
+                    <li><a href="#insertManually" role="button" data-toggle="modal">Insert Manually</a></li>
+                </ul>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                        aria-expanded="false">
+                    Insert FD <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Action</a></li>
+                    <li><a href="#">Another action</a></li>
+                    <li><a href="#">Something else here</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Separated link</a></li>
+                </ul>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-default">Normalizer</button>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-default">Download Normalisation</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div class="col-md-4" id="leftContent">
+            Test
+        </div>
+        <div class="col-md-8" id="rightContent">
+            Test
+        </div>
+    </div>
+
+</div>
+
+<!-- INSERT DATABASE CONNECTION -->
+<div class="modal fade" id="insertDBConnection" tabindex="-1" role="dialog" aria-labelledby="modalInsertDataSelect"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Database Connection</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- INSERT XML CONNECTION -->
+<div class="modal fade" id="insertXml" tabindex="-1" role="dialog" aria-labelledby="insertXml"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Import XML File</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <!-- /.col-lg-6 -->
+                    <div class="col-lg-12">
+                        <div class="input-group">
+                            <form id="uploadXml">
+                                <input id="xmlInput" name="xml" type="file" class="form-control">
+                            </form>
+                        </div>
+                        <!-- /input-group -->
+                    </div>
+                    <!-- /.col-lg-6 -->
+                </div>
+                <!-- /.row -->
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="xmlButton">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- INSERT MANUALLY -->
+<div class="modal fade" id="insertManually" tabindex="-1" role="dialog" aria-labelledby="insertManually"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Manually</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    $(function(){
+
+
+        uploadTextfileButton("xmlButton", "xmlInput");
+
+
+    });
+
+
+
+
+</script>
+</html>
