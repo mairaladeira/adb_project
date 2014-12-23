@@ -14,8 +14,23 @@ function simpleButton(domId, callback, server) {
     });
 }
 
-var textfiles = {}
+function postButton(domIdButton, domIdsInput, callback) {
+    $("#" + domIdButton).on("click", function(){
+        var data = [];
+        var i = 0, L = domIdsInput.length;
+        for (;i<L;i++) {
+            data.push($("#" + domIdsInput[i]).val());
+        }
+        console.log(data);
+        $.post("/" + domIdButton, {data: data}).done(
+            function(data) {
+                callback(data);
+            }
+        );
+    });
+}
 
+var textfiles = {}
 function uploadTextfileButton(domIdButton, domIdInput, callback) {
     if (domIdButton in textfiles) throw new Error("nop.. already done! {" + domIdButton + "}");
 

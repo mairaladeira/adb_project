@@ -75,11 +75,13 @@
                 <h4 class="modal-title" id="myModalLabel">Database Connection</h4>
             </div>
             <div class="modal-body">
-
+                <input type="text" class="form-control" id="insertdburl" placeholder="Database URL" aria-describedby="basic-addon1">
+                <input type="text" class="form-control" id=insertdbuser" placeholder="Username" aria-describedby="basic-addon1">
+                <input type="text" class="form-control" id=insertdbpw" placeholder="Password" aria-describedby="basic-addon1">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Confirm</button>
+                <button type="button" class="btn btn-primary" id="insertDBButton">Confirm</button>
             </div>
         </div>
     </div>
@@ -150,6 +152,9 @@
             alert(result);
         });
 
+        postButton("insertDBButton", ["insertdburl","insertdbuser","insertdbpw"], function(result){
+            alert(result);
+        });
 
     });
 

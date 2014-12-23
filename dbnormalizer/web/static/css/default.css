@@ -10,3 +10,7 @@ body {
 
 #rightContent {
 }
+
+.modal-body input {
+    margin-top:10px;
+}

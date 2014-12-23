@@ -35,7 +35,7 @@ def click(button):
 @app.route("/<button>", methods=["POST"])
 def upload(button):
     """
-    More complex button-click handler
+    Upload handler
     :param button: the domId of the button that was clicked
     :return:
     """
@@ -43,8 +43,13 @@ def upload(button):
         xml = request.form["data"]
         #TODO implement stuff
         return xml
-
-    return "nope"
+    elif button == "insertDBButton":
+        url = request.form["data"]
+        username = request.form["data"]
+        pw = request.form["data"]
+        #TODO implement...
+        return "insert db " + pw
+    return "nope " + button
 
 if __name__ == "__main__":
     t = threading.Thread(target=open_browser)
