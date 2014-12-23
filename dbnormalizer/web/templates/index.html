@@ -146,7 +146,9 @@
     $(function(){
 
 
-        uploadTextfileButton("xmlButton", "xmlInput");
+        uploadTextfileButton("xmlButton", "xmlInput", function(result){
+            alert(result);
+        });
 
 
     });

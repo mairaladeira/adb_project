@@ -16,7 +16,7 @@ function simpleButton(domId, callback, server) {
 
 var textfiles = {}
 
-function uploadTextfileButton(domIdButton, domIdInput) {
+function uploadTextfileButton(domIdButton, domIdInput, callback) {
     if (domIdButton in textfiles) throw new Error("nop.. already done! {" + domIdButton + "}");
 
     $("#" + domIdInput).on("change", function(e){
@@ -31,7 +31,7 @@ function uploadTextfileButton(domIdButton, domIdInput) {
         if (domIdButton in textfiles) {
             $.post("/" + domIdButton, {data: textfiles[domIdButton]}).done(
             function( data ) {
-                alert( "Data Loaded: " + data );
+                callback(data);
             });
         }
     });
