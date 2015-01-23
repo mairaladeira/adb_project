@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+		<schema name="TEST">
+			<tableInfo>
+				<table name="TEST">
+					<attributes>
+						<attribute>A</attribute>
+						<attribute>B</attribute>
+						<attribute>C</attribute>
+						<attribute>D</attribute>
+						<attribute>E</attribute>
+					</attributes>
+					<fds>
+						<fd>
+							<lhs>
+								<attribute>A</attribute>
+                                <attribute>B</attribute>
+							</lhs>
+							<rhs>
+								<attribute>C</attribute>
+							</rhs>
+						</fd>
+						<fd>
+							<lhs>
+								<attribute>B</attribute>
+							</lhs>
+							<rhs>
+								<attribute>D</attribute>
+							</rhs>
+						</fd>
+						<fd>
+							<lhs>
+                                <attribute>A</attribute>
+                                <attribute>B</attribute>
+								<attribute>E</attribute>
+							</lhs>
+							<rhs>
+								<attribute>C</attribute>
+                                <attribute>D</attribute>
+							</rhs>
+                        </fd>
+						<fd>
+							<lhs>
+								<attribute>C</attribute>
+                                <attribute>D</attribute>
+							</lhs>
+							<rhs>
+								<attribute>E</attribute>
+							</rhs>
+                        </fd>
+						<fd>
+							<lhs>
+								<attribute>C</attribute>
+                                <attribute>E</attribute>
+							</lhs>
+							<rhs>
+								<attribute>A</attribute>
+							</rhs>
+                        </fd>
+                    </fds>
+				</table>
+			</tableInfo>
+		</schema>
+</configuration>
