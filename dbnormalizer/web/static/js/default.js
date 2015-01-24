@@ -16,17 +16,23 @@ function simpleButton(domId, callback, server) {
 
 function postButton(domIdButton, domIdsInput, callback) {
     $("#" + domIdButton).on("click", function(){
-        var data = [];
-        var i = 0, L = domIdsInput.length;
-        for (;i<L;i++) {
-            data.push($("#" + domIdsInput[i]).val());
-        }
-        console.log(data);
-        $.post("/" + domIdButton, {data: data}).done(
-            function(data) {
-                callback(data);
+        var data = {
+            url: $('#'+domIdsInput[0]).val(),
+            user: $('#'+domIdsInput[1]).val(),
+            pwd: $('#'+domIdsInput[2]).val()
+        };
+        console.log(callback)
+        $.ajax({
+            type: "POST",
+            url: "/"+domIdButton,
+            data: data,
+            success: function(data){
+                if(data == "success") {
+                    callback(data);
+                    $('.modal').removeClass('in');
+                }
             }
-        );
+        });
     });
 }
 
