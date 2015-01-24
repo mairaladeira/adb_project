@@ -1,6 +1,7 @@
-__author__ = 'Maira'
-
 import os
+import subprocess
+
+__author__ = 'Maira'
 
 ##from dbnormalizer.core.importdata.XMLImport import XMLImport
 
@@ -10,4 +11,8 @@ import os
 #for table in schema.get_tables():
    # print(table.get_name)
 
-os.system("python3 dbnormalizer/web/web.py")
+file_path = os.path.abspath(os.path.dirname(__file__))+'/web/web.py'
+try:
+    subprocess.call(["python3", file_path])
+except OSError as e:
+    subprocess.call(["python", file_path])
