@@ -1,14 +1,30 @@
 body {
 }
 
+#content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
 #header {
-    margin-bottom: 20px;
 }
 
 #leftContent {
+    padding-bottom: 20px;
+    float: left;
+    border-right: 1px solid #cccccc;
 }
 
 #rightContent {
+}
+
+.fds.lhs {
+    margin-right: 5px;
+}
+
+.fds.rhs {
+    margin-left: 5px;
 }
 
 .modal-body input {

@@ -9,15 +9,15 @@ from dbnormalizer.core.table.FD import FD
 # this class parses an XML file and returns the schema for the normalizer.
 # If the XML file is not on the correct format, the system will trough an exception
 class XMLImport:
-    def __init__(self, file_name):
-        self.file = file_name
+    def __init__(self, xml_data):
+        self.xml_data = xml_data
         self.fileStructure = ''
         self.schema = {}
         self.tables = []
         self.attributes = {}
 
     def readfile(self):
-        self.fileStructure = elementTree.parse(self.file)
+        self.fileStructure = elementTree.fromstring(self.xml_data)
 
     def init_objects(self):
         self.readfile()
@@ -28,7 +28,7 @@ class XMLImport:
         return self.schema
 
     def init_schema(self):
-        root = self.fileStructure.getroot()
+        root = self.fileStructure
         for s in root.findall('schema'):
             self.schema = Schema(s.get('name'))
             self.fileStructure = s
