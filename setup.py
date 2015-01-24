@@ -31,6 +31,7 @@ setup(
                       'SQLAlchemy>=0.8.2',
                       'pyparsing>=2.0.3',
                       'flask>=0.10.1',
+                      'psycopg2>=2.5.4',
                     ],
     description='Database Normalizer for the Advanced Databases Course of DMKM master',
     long_description=long_description,

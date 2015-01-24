@@ -39,17 +39,18 @@ def upload(button):
     :param button: the domId of the button that was clicked
     :return:
     """
+    print(button)
+
     if button == "xmlButton":
         xml = request.form["data"]
         #TODO implement stuff
         return xml
     elif button == "insertDBButton":
-        url = request.form["data"]
-        username = request.form["data"]
-        pw = request.form["data"]
-        #TODO implement...
-        return "insert db " + pw
-    return "nope " + button
+        url = request.form.get('url')
+        username = request.form.get('user')
+        pwd = request.form.get('pwd')
+        return "success"
+    return "Undefined button: " + button
 
 if __name__ == "__main__":
     t = threading.Thread(target=open_browser)
