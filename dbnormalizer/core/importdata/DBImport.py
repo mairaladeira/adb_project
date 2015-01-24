@@ -3,7 +3,7 @@ __author__ = 'Iva'
 
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy.engine import reflection
-from dbnormalizer.core.table import Schema, Table, Attr
+from dbnormalizer.core.table import schema, Table, Attr
 
 # code to run an example
 # username = password = 'adbproject'
@@ -27,7 +27,7 @@ class DBImport:
         self.connection.close()
 
     def map_tables(self):
-        mapped = Schema(self.schema)
+        mapped = dbnormalizer.core.table.schema(self.schema)
         for table_name in self.inspector.get_table_names(schema=self.schema):
             new_table = Table(table_name)
             columns = self.inspector.get_columns(table_name, self.schema)
