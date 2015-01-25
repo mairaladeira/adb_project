@@ -18,11 +18,19 @@ class DBImport:
         self.password = password
         self.database = database
         self.schema = dbschema
-        self.engine = create_engine('postgresql://' + username + ':' + password + '@'+url+'/' + database)
-        self.connection = self.engine.connect()
-        self.metadata = MetaData(self.engine, reflect=True, schema=self.schema)
-        self.inspector = reflection.Inspector.from_engine(self.engine)
-        self.connection.close()
+        self.engine = None
+        self.connection = None
+        self.metadata = None
+        self.inspector = None
+        try:
+            self.engine = create_engine('postgresql://' + username + ':' + password + '@'+url+'/' + database)
+            self.connection = self.engine.connect()
+            self.metadata = MetaData(self.engine, reflect=True, schema=self.schema)
+            self.inspector = reflection.Inspector.from_engine(self.engine)
+            self.connection.close()
+        except Exception as e:
+            print('Error with database connection: ' + str(e))
+
 
     def map_tables(self):
         mapped = Schema(self.schema)
@@ -36,8 +44,9 @@ class DBImport:
                 attributes.append(attr_new)
             new_table.set_attributes(attributes)
             primary_key = self.inspector.get_pk_constraint(table_name, self.schema)
-            fds = self.construct_fd_from_pk(primary_key['constrained_columns'], attributes)
-            new_table.fds = fds
+            if primary_key['constrained_columns']:
+                fds = self.construct_fd_from_pk(primary_key['constrained_columns'], attributes)
+                new_table.fds = fds
             mapped.add_table(new_table)
         return mapped
 
@@ -75,7 +84,10 @@ class DBImport:
             print("\tForeign keys:  ", fk)
 
 
-# proba = DBImport(username='postgres', password='postgres', database='adb_test', dbschema='test')
+# proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='adb_test', dbschema='test')
 # proba.print_table_info()
 # maped = proba.map_tables()
+# for t in maped.get_tables():
+#     for fd in t.get_fds:
+#         print(fd.get_rhs)
 
