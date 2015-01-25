@@ -22,7 +22,28 @@ class NF:
     def set_table(self, table):
         self.table = table
 
-    # @property
+    def get_attr_closure(self,attr_list,table):
+        attr1 = table.get_attributes
+        fd1 = table.get_fds
+        left_closure = []
+        for left in attr_list:
+            for attrib in attr1:
+                if left.name == attrib.name:
+                    left_closure.append(attrib)
+        stopper = 0
+        while stopper == 0:
+            left_closure_len_init = len(left_closure)
+            for fd in fd1:
+                fdlhs = [l.name for l in fd.get_lhs]
+                left_names = [n.name for n in left_closure]
+                if set(fdlhs) <= set(left_names):
+                    for right_e in fd.get_rhs:
+                        if not(set([right_e.name]) <= set(left_names)):
+                            left_closure.append(right_e)
+            if left_closure_len_init == len(left_closure):
+                stopper = 1
+        return left_closure
+
     def get_mincover(self, table):
         attrs = [attrib.name for attrib in table.get_attributes]
         # first step: split rhs
@@ -99,3 +120,6 @@ class NF:
                  fd_3.append(FD(a,c))
         step3_table.set_fds(fd_3)
         return fd_3
+
+
+
