@@ -9,8 +9,36 @@ class NF:
         self.candidate_keys = {}
 
     #get all the candidates keys for the normal forms
-    def get_candidate_keys(self):
-        return self.candidate_keys
+    def get_candidate_keys(self, table):
+        candidate_keys=[]
+        candidate_singleton=[]
+        allattrs = table.get_attributes
+        allattrnames = [n.name for n in allattrs]
+        workattrs = table.get_attributes
+        for a in allattrs:
+            cover = self.get_attr_closure([a],table)
+            covernames = [n.name for n in cover]
+            if set(allattrnames) <= set(covernames):
+                candidate_keys.append([a])
+                candidate_singleton.append(a)
+        workattrs = list(set(workattrs)-set(candidate_singleton))
+        x = len(workattrs)
+        powerset=[]
+        for i in range(1,1 << x):
+            powerset.append([workattrs[j] for j in range(x) if (i & (1 << j))])
+        for p in powerset:
+            stop=0
+            if len(candidate_keys)>=1:
+                for c in candidate_keys:
+                    if set(c) <= set(p):
+                        stop = 1
+            if stop<1:
+                cover = self.get_attr_closure(p,table)
+                covernames = [n.name for n in cover]
+                if set(allattrnames) <= set(covernames):
+                    candidate_keys.append(p)
+        return candidate_keys
+
 
     def is_prime_attribute(self, table, attribute):
         is_prime_attr = False
