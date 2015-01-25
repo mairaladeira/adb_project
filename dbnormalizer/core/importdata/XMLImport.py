@@ -19,7 +19,7 @@ class XMLImport:
 
     def readfile(self):
         if self.test:
-            self.fileStructure = elementTree.parse(self.file)
+            self.fileStructure = elementTree.parse(self.xml_data)
         else:
             self.fileStructure = elementTree.fromstring(self.xml_data)
 
