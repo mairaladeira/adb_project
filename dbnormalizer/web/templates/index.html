@@ -53,7 +53,7 @@
     </div>
 
     <div id="content">
-        <div class="col-md-3" id="leftContent">
+        <div class="col-md-4" id="leftContent">
             <h4>Tables</h4>
             <ul id="tables-list"></ul>
         </div>
@@ -76,6 +76,8 @@
                 <input type="text" class="form-control" id="insertdb-url" name="insertbd-url" placeholder="Database URL" aria-describedby="basic-addon1">
                 <input type="text" class="form-control" id="insertdb-user" name="insertbd-user" placeholder="Username" aria-describedby="basic-addon1">
                 <input type="password" class="form-control" id="insertdb-pwd" name="insertbd-pwd" placeholder="Password" aria-describedby="basic-addon1">
+                <input type="text" class="form-control" id="insertdb-database" name="insertbd-database" placeholder="Database" aria-describedby="basic-addon1">
+                <input type="text" class="form-control" id="insertdb-schema" name="insertbd-schema" placeholder="Schema" aria-describedby="basic-addon1">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -149,7 +151,7 @@
                 console.log(table)
             });
         });
-        postButton("insertDBButton", ["insertdb-url","insertdb-user","insertdb-pwd"], function(result){
+        postButton("insertDBButton", ["insertdb-url","insertdb-user","insertdb-pwd", "insertdb-database", "insertdb-schema"], function(result){
             alert(result);
         });
 

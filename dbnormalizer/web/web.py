@@ -4,10 +4,11 @@ import webbrowser
 import threading
 import time
 from dbnormalizer.core.importdata.XMLImport import XMLImport
+from dbnormalizer.core.importdata.DBImport import DBImport
 import json
 from dbnormalizer.core.util.funcs import get_attributes_list, get_fds_list
-
 app = Flask(__name__)
+schema = []
 
 def open_browser():
     """
@@ -41,6 +42,7 @@ def upload(button):
     :param button: the domId of the button that was clicked
     :return:
     """
+    global schema
     print(button)
 
     if button == "xmlButton":
@@ -48,18 +50,22 @@ def upload(button):
         xml_structure = XMLImport(xml_data)
         xml_structure.init_objects()
         schema = xml_structure.get_schema()
-        js_object = get_js_object(schema)
+        js_object = get_js_object()
         return js_object
     elif button == "insertDBButton":
         url = request.form.get('url')
         username = request.form.get('user')
         pwd = request.form.get('pwd')
-        #TODO implement
-        return "success"
+        db_name = request.form.get('dbName')
+        schema_name = request.form.get('schema')
+        schema_structure = DBImport(url, username, pwd, schema_name, db_name)
+        schema = schema_structure.map_tables()
+        js_object = get_js_object()
+        return js_object
     return "Undefined button: " + button
 
 
-def get_js_object(schema):
+def get_js_object():
     tables = schema.get_tables()
     tables_data = []
     for table in tables:

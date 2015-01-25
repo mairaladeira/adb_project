@@ -13,12 +13,12 @@ from sqlalchemy.engine import reflection
 class DBImport:
     """ class used to import the db metadata from a postgresql database
     """
-    def __init__(self, username, password, database, dbschema):
+    def __init__(self, url, username, password, dbschema, database):
         self.username = username
         self.password = password
         self.database = database
         self.schema = dbschema
-        self.engine = create_engine('postgresql://' + username + ':' + password + '@localhost/' + database)
+        self.engine = create_engine('postgresql://' + username + ':' + password + '@'+url+'/' + database)
         self.connection = self.engine.connect()
         self.metadata = MetaData(self.engine, reflect=True, schema=self.schema)
         self.inspector = reflection.Inspector.from_engine(self.engine)
@@ -58,7 +58,7 @@ class DBImport:
 
             if not same_att:
                 lhs = prim
-                rhs = att
+                rhs = [att]
                 fd = FD(lhs=lhs, rhs=rhs)
                 fds.append(fd)
         return fds

@@ -12,4 +12,4 @@ class FD:
 
     @property
     def get_rhs(self):
-        return  self.rhs
+        return self.rhs

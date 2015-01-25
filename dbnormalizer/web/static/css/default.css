@@ -13,7 +13,14 @@ body {
 #leftContent {
     padding-bottom: 20px;
     float: left;
+    min-height: 100%;
     border-right: 1px solid #cccccc;
+    padding-left: 0;
+    padding-right: 0;
+}
+#leftContent h4 {
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 #rightContent {
@@ -26,7 +33,95 @@ body {
 .fds.rhs {
     margin-left: 5px;
 }
+.table-elem {
+    float: left;
+    clear: both;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+
+}
+.table-elem:nth-child(odd) {
+    background-color: #ddd;
+}
+
+.table-elem:nth-child(even) {
+    background-color: #eee;
+}
+
+.table-content {
+    display: none;
+    float: left;
+    padding-bottom: 20px;
+    width: 100%;
+}
 
 .modal-body input {
     margin-top:10px;
+}
+
+#tables-list {
+    list-style: none;
+    padding-left: 0;
+    float: left;
+    width: 100%;
+}
+
+.table-name {
+    font-weight: 500;
+    font-size: 12px;
+    padding-bottom: 10px;
+    cursor: pointer;
+}
+
+.attr-list {
+    padding-left: 25px;
+}
+
+.fds-list {
+    list-style: none;
+    padding-left: 5px;
+}
+.fd-elem {
+    float: left;
+    clear: both;
+    width: 100%;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #cccccc;
+}
+
+.fd-elem:last-child {
+    border-bottom: none;
+}
+
+.fds.fds_lhs {
+    float: left;
+    width: 35%;
+    padding-right: 5px;
+}
+
+.fds .fd {
+    float: left;
+    padding-right: 5px;
+}
+.fds .fd:after{
+    content:',';
+}
+
+.fds .fd:last-child:after{
+    content:'';
+}
+
+.fds.fds_rhs {
+    float: right;
+    width: 55%;
+}
+
+.glyphicon-arrow-right {
+    text-align: center;
+}
+
+.table-name .glyphicon {
+    margin-left: 5px;
 }
