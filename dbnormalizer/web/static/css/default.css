@@ -7,7 +7,17 @@ body {
     position: absolute;
 }
 
+.error-message{
+    color: red;
+}
+
 #header {
+}
+
+#logo {
+    font-family: calibri;
+    font-size: 38px;
+    text-align: center;
 }
 
 #leftContent {

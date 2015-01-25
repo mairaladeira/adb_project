@@ -59,9 +59,14 @@ def upload(button):
         db_name = request.form.get('dbName')
         schema_name = request.form.get('schema')
         schema_structure = DBImport(url, username, pwd, schema_name, db_name)
-        schema = schema_structure.map_tables()
-        js_object = get_js_object()
-        return js_object
+        if None == schema_structure.get_error():
+            schema = schema_structure.map_tables()
+            js_object = get_js_object()
+            return js_object
+        else:
+            error = schema_structure.get_error()
+            print(error)
+            return error
     return "Undefined button: " + button
 
 

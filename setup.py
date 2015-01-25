@@ -42,7 +42,7 @@ setup(
         'Programming Language :: Python',
         'Development Status :: Beta',
         'Natural Language :: English',
-        #'Environment :: Web Environment',
+        'Environment :: Web Environment',
         'Intended Audience :: ADB course',
         'Operating System :: OS Independent',
         ],

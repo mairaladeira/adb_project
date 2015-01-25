@@ -15,6 +15,7 @@
 <div>
     <div id="header">
         <!-- Single button -->
+        <div id="logo">DBNormalizer 1.0</div>
         <div class="btn-group btn-group-justified" role="group" aria-label="...">
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -73,6 +74,7 @@
                 <h4 class="modal-title" id="myModalLabel">Database Connection</h4>
             </div>
             <div class="modal-body">
+                <div class="error-message" id="db-connection-error"></div>
                 <input type="text" class="form-control" id="insertdb-url" name="insertbd-url" placeholder="Database URL" aria-describedby="basic-addon1">
                 <input type="text" class="form-control" id="insertdb-user" name="insertbd-user" placeholder="Username" aria-describedby="basic-addon1">
                 <input type="password" class="form-control" id="insertdb-pwd" name="insertbd-pwd" placeholder="Password" aria-describedby="basic-addon1">

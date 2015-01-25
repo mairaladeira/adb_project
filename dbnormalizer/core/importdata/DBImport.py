@@ -22,6 +22,7 @@ class DBImport:
         self.connection = None
         self.metadata = None
         self.inspector = None
+        self.error = None
         try:
             self.engine = create_engine('postgresql://' + username + ':' + password + '@'+url+'/' + database)
             self.connection = self.engine.connect()
@@ -30,7 +31,10 @@ class DBImport:
             self.connection.close()
         except Exception as e:
             print('Error with database connection: ' + str(e))
+            self.error = str(e.args[0])
 
+    def get_error(self):
+        return self.error
 
     def map_tables(self):
         mapped = Schema(self.schema)

@@ -23,17 +23,18 @@ function postButton(domIdButton, domIdsInput, callback) {
             dbName: $('#'+domIdsInput[3]).val(),
             schema: $('#'+domIdsInput[4]).val()
         };
-        console.log(callback)
         $.ajax({
             type: "POST",
             url: "/"+domIdButton,
             data: data,
             success: function(data){
-                $('.modal').removeClass('in');
-                data = JSON.parse(data);
-                console.log(data);
-                displayTables(data);
-
+                try {
+                    data = JSON.parse(data);
+                    $('.modal').removeClass('in');
+                    displayTables(data);
+                } catch(e) {
+                    $('#db-connection-error').html(data)
+                }
             }
         });
     });
