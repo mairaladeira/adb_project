@@ -72,7 +72,7 @@ class DBImport:
             primary_key = self.inspector.get_pk_constraint(table_name, self.schema)
             print("\tPrimary key is: ", primary_key['constrained_columns'])
             fk = self.inspector.get_foreign_keys(table_name, self.schema)
-            print("\tForeign keys: ", fk)
+            print("\tForeign keys:  ", fk)
 
 
 # proba = DBImport(username='postgres', password='postgres', database='adb_test', dbschema='test')
