@@ -12,6 +12,14 @@ class NF:
     def get_candidate_keys(self):
         return self.candidate_keys
 
+    def is_prime_attribute(self, table, attribute):
+        is_prime_attr = False
+        for e in self.get_candidate_keys(table):
+            enames = [n.name for n in e]
+            if set([attribute.name]) <= set(enames):
+                is_prime_attr = True
+        return is_prime_attr
+
     def is_key_attribute(self, attribute):
         is_key_attr = False
         for e in self.candidate_keys:
