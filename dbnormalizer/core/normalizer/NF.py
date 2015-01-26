@@ -3,16 +3,42 @@ __author__ = 'Maira'
 from dbnormalizer.core.table.FD import FD
 from dbnormalizer.core.table.Table import Table
 
-class NF:
-    def __init__(self):
-        self.tables = []
-        self.candidate_keys = {}
 
-    def init_candidate_keys(self):
-        for t in self.tables:
-            self.candidate_keys[t] = self.get_candidate_keys(t)
+class NF:
+    # def __init__(self):
+    #     self.tables = []
+    #     self.candidate_keys = {}
+    def __init__(self):
+        self.table = None
+        self.candidate_keys = []
+        self.min_cover = []
+
+    def __init__(self, table):
+        self.table = table
+        self.candidate_keys = self.get_candidate_keys(self.table)
+        self.min_cover = self.get_mincover(self.table)
+
+    # determine the nf of the table. it returns the nf, and is used in the Table class
+    def determine_nf(self):
+        nf = 'NF1'
+        if self.is_nf2(self.table):
+            nf = 'NF2'
+            if self.is_nf3(self.table):
+                nf = 'NF3'
+                if self.is_bcnf(self.table):
+                    nf = 'BCNF'
+        self.table.nf = nf
+        return nf
+
+        #check isnf2,3,4 and return the nf of the table
+
+    # def init_candidate_keys(self):
+    #     for t in self.tables:
+    #         self.candidate_keys[t] = self.get_candidate_keys(t)
 
     #get all the candidates keys for the normal forms
+    # returns the set of candidate keys - list of attributes or list of list of attributes (for composite keys)
+    # for example [[a], [b,c]] , where a,b,c are of type Attribute
     def get_candidate_keys(self, table):
         candidate_keys=[]
         candidate_singleton=[]
@@ -20,7 +46,7 @@ class NF:
         allattrnames = [n.name for n in allattrs]
         workattrs = table.get_attributes
         for a in allattrs:
-            cover = self.get_attr_closure([a],table)
+            cover = self.get_attr_closure([a], table)
             covernames = [n.name for n in cover]
             if set(allattrnames) <= set(covernames):
                 candidate_keys.append([a])
@@ -46,23 +72,26 @@ class NF:
 
     def is_prime_attribute(self, table, attribute):
         is_prime_attr = False
-        for e in self.get_candidate_keys(table):
+#        for e in self.get_candidate_keys(table):
+        for e in self.candidate_keys:
             enames = [n.name for n in e]
             if set([attribute.name]) <= set(enames):
                 is_prime_attr = True
         return is_prime_attr
 
-    def is_key_attribute(self, attribute):
-        is_key_attr = False
-        for e in self.candidate_keys:
-                if e == attribute:
-                    is_key_attr = True
-        return is_key_attr
+    # we don't need a function is_key_attribute, since we have a is_prime_attribute - it's the same thing
+    # def is_key_attribute(self, attribute):
+    #     is_key_attr = False
+    #     for e in self.candidate_keys:
+    #             if e == attribute:
+    #                 is_key_attr = True
+    #     return is_key_attr
 
-    def set_table(self, table):
-        self.tables.append(table)
+    # changed concept to work with one table at a time. not needed
+    # def set_table(self, table):
+    #     self.tables.append(table)
 
-    def get_attr_closure(self,attr_list,table):
+    def get_attr_closure(self, attr_list, table):
         attr1 = table.get_attributes
         fd1 = table.get_fds
         left_closure = []
@@ -84,6 +113,8 @@ class NF:
                 stopper = 1
         return left_closure
 
+    # returns a minimal cover - list of functional dependencies of a table. [fd1, fd2,...]
+    # the fd's are of type FD
     def get_mincover(self, table):
         attrs = [attrib.name for attrib in table.get_attributes]
         # first step: split rhs
@@ -160,3 +191,68 @@ class NF:
                  fd_3.append(FD(a,c))
         step3_table.set_fds(fd_3)
         return fd_3
+
+    #determine if a table is in second NF, returns true/false
+    def is_nf2(self, table):
+        fds0=table.get_fds
+        fds = []
+        for fd in fds0:
+            for right_e in fd.rhs:
+                fds.append(FD(fd.get_lhs,[right_e]))
+        ck_names=[]
+        for n in self.candidate_keys:
+            temp=[a.name for a in n]
+            ck_names.append(temp)
+        try:
+            for fd in fds:
+                lhs = fd.get_lhs()
+                rhs = fd.get_rhs()
+                for r in rhs:
+                    if not self.is_prime_attribute(table,r):
+                        if lhs not in self.candidate_keys:
+                            lhsn=[l.name for l in lhs]
+                            for c in ck_names:
+                                if set(lhsn)< set(c):
+                                    return False
+            return True
+        except Exception as ex:
+            print('violates_2NF exception')
+            print(ex)
+
+    #differs from function in NF3 class in a way that it uses the table as an argument
+    #tbd the fds and attributes in the algorithm need to be treated with respect to their class - Attribute and FD.
+    def is_nf3(self, table):
+        fds = table.get_fds
+        lhs_is_super_key = False
+        try:
+            for fd in fds:
+                lhs = fd.get_lhs
+                rhs = fd.get_rhs
+                for e in self.candidate_keys:
+                    lhs_is_super_key = False
+                    if e == lhs:
+                        lhs_is_super_key = True
+
+                if not lhs_is_super_key:
+                    for r in rhs:
+                        if not self.is_prime_attribute(table, r):
+                            return False
+            return True
+        except Exception as ex:
+            print('violates_3NF excepion')
+            print(ex)
+
+    #same thing as above, it uses a table as an argument
+    def is_bcnf(self, table):
+        fds = table.get_fds
+        for fd in fds:
+            lhs = fd.get_lhs()
+            rhs = fd.get_rhs()
+            for f in lhs:
+                if f not in self.candidate_keys:
+                    return False
+        return True
+
+# t = Table('name')
+# nf = NF(t)
+# nf.determine_nf()

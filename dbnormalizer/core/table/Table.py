@@ -8,6 +8,7 @@ class Table:
         self.attributes = []
         #Table fds will be a list of fd objects
         self.fds = []
+        self.nf = 'not defined'
 
     def set_attributes(self, attributes):
         self.attributes = attributes
@@ -17,6 +18,7 @@ class Table:
 
     def add_fd(self, fd):
         self.fds.append(fd)
+
 
     # tbd - implement a function which removes the fd
     # def remove_fd(self, fd):
