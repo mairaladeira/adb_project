@@ -225,9 +225,14 @@ class NF:
             for fd in fds:
                 lhs = fd.get_lhs
                 rhs = fd.get_rhs
+                ck_names=[]
+                lhsn=[a.name for a in lhs]
                 for e in self.candidate_keys:
+                    temp=[a.name for a in e]
+                    ck_names.append(temp)
+                for e in ck_names:
                     lhs_is_super_key = False
-                    if e == lhs:
+                    if set(e) == set(lhsn):
                         lhs_is_super_key = True
 
                 if not lhs_is_super_key:
@@ -244,10 +249,20 @@ class NF:
         fds = self.table.get_fds
         for fd in fds:
             lhs = fd.get_lhs
+            lhsn=[a.name for a in lhs]
+            ck_names=[]
+            for e in self.candidate_keys:
+                temp=[a.name for a in e]
+                ck_names.append(temp)
             rhs = fd.get_rhs
-            for f in lhs:
-                if f not in self.candidate_keys:
-                    return False
+            if not lhsn in ck_names:
+                return False
+
+            # for f in lhs:
+            #     if f not in self.candidate_keys:
+            # for f in lhs:
+            #     if f not in self.candidate_keys:
+            #         return False
         return True
 
 # from dbnormalizer.core.importdata.XMLImport import XMLImport
