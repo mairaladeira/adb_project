@@ -205,8 +205,8 @@ class NF:
             ck_names.append(temp)
         try:
             for fd in fds:
-                lhs = fd.get_lhs()
-                rhs = fd.get_rhs()
+                lhs = fd.get_lhs
+                rhs = fd.get_rhs
                 for r in rhs:
                     if not self.is_prime_attribute(table,r):
                         if lhs not in self.candidate_keys:
@@ -246,13 +246,19 @@ class NF:
     def is_bcnf(self, table):
         fds = table.get_fds
         for fd in fds:
-            lhs = fd.get_lhs()
-            rhs = fd.get_rhs()
+            lhs = fd.get_lhs
+            rhs = fd.get_rhs
             for f in lhs:
                 if f not in self.candidate_keys:
                     return False
         return True
 
-# t = Table('name')
-# nf = NF(t)
-# nf.determine_nf()
+# from dbnormalizer.core.importdata.XMLImport import XMLImport
+# test = XMLImport(r'C:\Users\Kaiser\Documents\GitHub\adb_project\examples\test.xml',True)
+# test.init_objects()
+# schema = test.get_schema()
+# for table in schema.get_tables():
+#     print(table.get_name)
+#     nf = NF(table)
+#     nf.determine_nf()
+#     print(table.nf)
