@@ -58,12 +58,44 @@ function insertFDButton(domIdButton, data, callback){
                 $('#attr-box').html('');
                 $('#attr-lhs').html('');
                 $('#attr-rhs').html('');
-                var fd_elem = createFdsElement(fd, table);
+                var data_id = parseInt($('.fd-elem:last-child').data('id')) + 1;
+                var fd_elem = createFdsElement(fd, table, data_id);
                 $('#table-'+table).find('.fds-list').append(fd_elem);
+                edit_button_unbind_click();
+                edit_button_bind_click();
             }
 
         });
     });
+}
+
+function editFDButton(domIdButton, data, callback){
+     $("#" + domIdButton).on("click", function(){
+
+         var table = $("#"+data[0]).html();
+         var lhs = [];
+         $.each($("#"+data[1]).find('li'), function(){
+            lhs.push($(this).html());
+         });
+         var rhs = [];
+         $.each($("#"+data[2]).find('li'), function(){
+            rhs.push($(this).html());
+         });
+         var id = $(this).data('id');
+         var fd = {lhs: lhs, rhs: rhs};
+         $.post("/"+domIdButton, {table: table, lhs: lhs.toString(), rhs: rhs.toString(), id: id}).done(function(data){
+            if(data == "success"){
+                $('.modal').removeClass('in');
+                $('#attr-box-edit-fd').html('');
+                $('#attr-lhs-edit-fd').html('');
+                $('#attr-rhs-edit-fd').html('');
+                var fd_elem = createFdsElement(fd, table, id);
+                $('.fd-elem[data-id='+id+']').replaceWith(fd_elem);
+                edit_button_unbind_click()
+                edit_button_bind_click();
+            }
+         });
+     });
 }
 
 var textfiles = {}
@@ -132,7 +164,7 @@ function createTableContentElements(table){
     content.appendChild(attr_list);
     var fds = newHTMLElement('ol', {class:'fds-list'});
     $.each(table['fds'], function(i, val){
-        var fd = createFdsElement(val, table['name']);
+        var fd = createFdsElement(val, table['name'], i);
         fds.appendChild(fd);
     });
     var fds_title_elem = newHTMLElement('div', {class:'fds-title'});
@@ -155,8 +187,8 @@ function createTableAttributeElement(attr) {
     return newHTMLElement('li', {class: 'attr-elem', text:attr});
 }
 
-function createFdsElement(fds,table_name) {
-    var fd = newHTMLElement('li', {class:'fd-elem'});
+function createFdsElement(fds,table_name, key) {
+    var fd = newHTMLElement('li', {class:'fd-elem', 'data-id': key});
     var fd_lhs = newHTMLElement('div', {class:'fds fds_lhs'});
     var fd_rhs = newHTMLElement('div', {class:'fds fds_rhs'});
     $.each(fds['lhs'], function(j,lhs){
@@ -170,7 +202,6 @@ function createFdsElement(fds,table_name) {
     });
     var fds_edit = newHTMLElement('a', {
                         class:'glyphicon glyphicon-edit fds_edit_icon',
-                        id:'edit-fd-'+table_name,
                         title: 'Edit FDs',
                         'data-id': table_name,
                         role: 'button',
@@ -207,12 +238,28 @@ function displayTables(data) {
         $('.fds_add_icon').bind('click', function(e){
             var table = $(this).data('id');
             $(".modal-title #add-fd-table-name").html( table );
-            $.post("/requestAddFD", {table: table}).done(function(data){
+            $.post("/requestFD", {table: table}).done(function(data){
                 data = JSON.parse(data);
                 create_addFd_attr_list(data);
             });
         });
+        edit_button_bind_click();
     }, 1000);
+}
+
+function generate_fd_list_elem(parent) {
+    var list_attr = []
+    parent.find('.lhs').each(function(){
+        list_attr.push($(this).html());
+        var fd = newHTMLElement('li', {class:'attr-elem', text: $(this).html()});
+        $('#attr-lhs-edit-fd').append(fd);
+    })
+    parent.find('.rhs').each(function(){
+        list_attr.push($(this).html());
+        var fd = newHTMLElement('li', {class:'attr-elem', text: $(this).html()});
+        $('#attr-rhs-edit-fd').append(fd);
+    })
+    return list_attr;
 }
 
 function create_addFd_attr_list(attributes) {
@@ -222,8 +269,44 @@ function create_addFd_attr_list(attributes) {
         attr_list.append(a);
     })
     $(function() {
-    $( "#attr-box, #attr-lhs, #attr-rhs" ).sortable({
+        $( "#attr-box, #attr-lhs, #attr-rhs" ).sortable({
           connectWith: ".sortable-box"
         }).disableSelection();
     });
+}
+
+function create_editFD_lists(data, list_of_attr) {
+    $.each(data, function(key, val){
+        if(list_of_attr.indexOf(val) == -1){
+            var fd = newHTMLElement('li', {class:'attr-elem', text: val});
+            $('#attr-box-edit-fd').append(fd);
+        }
+        $(function() {
+            $( "#attr-box-edit-fd, #attr-lhs-edit-fd, #attr-rhs-edit-fd" ).sortable({
+              connectWith: ".sortable-box"
+            }).disableSelection();
+        });
+    });
+}
+
+function edit_button_bind_click(){
+    $('.fds_edit_icon').bind('click', function(e){
+        $('#attr-box-edit-fd').html('');
+        $('#attr-lhs-edit-fd').html('');
+        $('#attr-rhs-edit-fd').html('');
+        var table = $(this).data('id');
+        var parent = $(this).parent();
+        var id = parent.data('id');
+        $('#editFDButton').attr('data-id', id);
+        $(".modal-title #edit-fd-table-name").html( table );
+        var list_of_attr = generate_fd_list_elem(parent);
+        $.post("/requestFD", {table: table}).done(function(data){
+            data = JSON.parse(data);
+            create_editFD_lists(data, list_of_attr);
+        });
+    });
+}
+
+function edit_button_unbind_click() {
+    $('.fds_edit_icon').unbind('click');
 }
