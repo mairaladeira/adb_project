@@ -97,12 +97,14 @@ body {
     float: left;
     clear: both;
     width: 100%;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #cccccc;
+    border-top: 1px solid #cccccc;
+    padding: 5px 5px;
+    border-right: 1px solid #cccccc;
+    border-left: 1px solid #cccccc;
 }
 
 .fd-elem:last-child {
-    border-bottom: none;
+    border-bottom: 1px solid #cccccc;
 }
 
 .fds.fds_lhs {
@@ -133,5 +135,83 @@ body {
 }
 
 .table-name .glyphicon {
+    float: right;
+}
+.fds-title {
+    margin-bottom: 5px;
+}
+.fds-title h6 {
+    float: left;
     margin-left: 5px;
+}
+
+.fds-title .glyphicon {
+    float: right;
+    padding: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+}
+.fds-title .glyphicon:hover {
+    color: #AAA;
+}
+.elems-list {
+    float: left;
+    width: 100%;
+    display:block;
+}
+.elems-list.half{
+    width: 49%;
+}
+.elems-list.half:last-child {
+    float: right;
+}
+.elems-list h6{
+    float: left;
+}
+.sortable-box {
+    padding: 10px 5px;
+    border: 1px solid #333333;
+    list-style: none;
+    float: left;
+    width: 100%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    height: 90px;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+.sortable-box li {
+    cursor: pointer;
+    color: #333333 !important;
+    float: left;
+    margin-right: 5px;
+    display: block;
+}
+.sortable-box li:after {
+    content: ",";
+}
+.sortable-box li:last-child:after {
+    content: "";
+}
+.sortable-box.fd {
+    margin-bottom: 16px;
+    height: 100px;
+}
+.clear{
+    clear: both;
+}
+
+.fds_edit_icon {
+    float: right;
+    cursor: pointer;
+    padding: 5px 0;
+    text-decoration: none;
+    color: #333333;
+}
+.fds_edit_icon:hover {
+    color: #AAAAAA;
+    text-decoration: none;
 }

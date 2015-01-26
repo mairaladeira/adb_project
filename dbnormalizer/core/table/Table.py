@@ -15,6 +15,13 @@ class Table:
     def set_fds(self, fds):
         self.fds = fds
 
+    def add_fd(self, fd):
+        self.fds.append(fd)
+
+    # tbd - implement a function which removes the fd
+    # def remove_fd(self, fd):
+    #     self.fds.remove(fd)
+
     @property
     def get_name(self):
         return self.name

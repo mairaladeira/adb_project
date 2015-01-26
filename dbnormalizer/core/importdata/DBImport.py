@@ -87,11 +87,74 @@ class DBImport:
             fk = self.inspector.get_foreign_keys(table_name, self.schema)
             print("\tForeign keys:  ", fk)
 
+    def check_fds_hold(self, fds, table):
+        fd_hold = []
+        fd_not_hold = []
+        holds = False
+        if isinstance(fds, list):
+            for one_fd in fds:
+                holds = self.check_fd_hold(one_fd, table)
+                if holds:
+                    fd_hold.append(one_fd)
+        else:
+            holds = self.check_fd_hold(fds, table)
+            fd_hold.append(fds)
+        return fd_hold
+
+    def check_fd_hold(self, one_fd, table):
+        try:
+            group_left = []
+            lhs = one_fd.get_lhs
+            if isinstance(lhs, list):
+                for att in lhs:
+                    group_left.append(str(att.get_name))
+            else:
+                group_left.append(str(lhs.get_name))
+
+            group_right = []
+            rhs = one_fd.get_rhs
+            if isinstance(rhs, list):
+                for att in rhs:
+                    group_right.append(str(att.get_name))
+            else:
+                group_right.append(str(rhs.get_name))
+
+            string1 = ", ".join(str(x) for x in group_left)
+            string2 = ", ".join(str(x) for x in group_right)
+
+            query = "select count(*) as count from (select distinct " + string1 + ", " \
+                    + string2 + " from " + str(self.schema) + "." + str(table.name) \
+                    + ") as temptable group by " + string1 + " having count(*) > 1"
+
+            #print(query)
+            self.connection = self.engine.connect()
+            result = self.connection.execute(query)
+            self.connection.close()
+            if result.rowcount == 0:
+                return True #functional dependecy holds
+            else:
+                return False
+        except Exception as e:
+            print('Error with query, check if fd is good: ' + str(e))
+            self.error = str(e.args[0])
+
+
 
 # proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='adb_test', dbschema='test')
-# proba.print_table_info()
+# #proba.print_table_info()
 # maped = proba.map_tables()
+# lhs =[]
+# lhs.append(Attribute('c'))
+# rhs =[]
+# rhs.append(Attribute('d'))
+# notfd = FD(lhs, rhs)
 # for t in maped.get_tables():
-#     for fd in t.get_fds:
-#         print(fd.get_rhs)
-
+#     if t.name == 'testing':
+#         t.add_fd(notfd)
+#     result = proba.check_fds_hold(t.get_fds, t)
+#     print("FDs in table - added user: ")
+#     for fds in t.get_fds:
+#         print(", ".join(str(x.get_name) for x in fds.get_lhs) + ' -> ' + ", ".join(str(x.get_name) for x in fds.get_rhs))
+#     print("FDs in table that hold: ")
+#     for res in result:
+#         print(", ".join(str(x.get_name) for x in res.get_lhs) + ' -> ' + ", ".join(str(x.get_name) for x in res.get_rhs))
