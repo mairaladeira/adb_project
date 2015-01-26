@@ -5,8 +5,12 @@ from dbnormalizer.core.table.Table import Table
 
 class NF:
     def __init__(self):
-        self.table = {}
+        self.tables = []
         self.candidate_keys = {}
+
+    def init_candidate_keys(self):
+        for t in self.tables:
+            self.candidate_keys[t] = self.get_candidate_keys(t)
 
     #get all the candidates keys for the normal forms
     def get_candidate_keys(self, table):
@@ -56,7 +60,7 @@ class NF:
         return is_key_attr
 
     def set_table(self, table):
-        self.table = table
+        self.tables.append(table)
 
     def get_attr_closure(self,attr_list,table):
         attr1 = table.get_attributes
@@ -156,6 +160,3 @@ class NF:
                  fd_3.append(FD(a,c))
         step3_table.set_fds(fd_3)
         return fd_3
-
-
-
