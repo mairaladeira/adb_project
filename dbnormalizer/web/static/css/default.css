@@ -34,6 +34,7 @@ body {
 }
 
 #rightContent {
+    padding: 0;
 }
 
 .fds.lhs {
@@ -214,4 +215,29 @@ body {
 .fds_edit_icon:hover {
     color: #AAAAAA;
     text-decoration: none;
+}
+
+.table-actions-name {
+    border-bottom: 1px solid #cccccc;
+    text-align: center;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+}
+
+#action-content .fds-list {
+    float: left;
+    padding-left: 15px;
+}
+
+#action-content .fds-list .fd-elem .fds.fds_lhs{
+    padding-right: 80px;
+}
+
+#rightContent .nav {
+    margin-bottom: 15px;
+}
+
+.nav>li>a.selected {
+    text-decoration: none;
+    background-color: #eee;
 }

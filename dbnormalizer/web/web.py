@@ -8,6 +8,7 @@ from dbnormalizer.core.importdata.DBImport import DBImport
 import json
 from dbnormalizer.core.util.funcs import get_attributes_list, get_fds_list
 from dbnormalizer.core.table.FD import FD
+from dbnormalizer.core.normalizer.NF import NF
 
 app = Flask(__name__)
 schema = []
@@ -105,9 +106,21 @@ def upload(button):
             fd.set_lhs(lhs)
             fd.set_rhs(rhs)
             return "success"
+        elif button == "minimalCover":
+            table_name = request.form['table']
+            table = schema.get_table_by_name(table_name)
+            nf = NF(table)
+            mc = nf.get_min_cover()
+            js_object = get_display_fd_js_object(mc)
+            return js_object
         return "Undefined button: " + button
     except Exception as e:
         print(str(e))
+
+
+def get_display_fd_js_object(fds):
+    fds_obj = get_fds_list(fds)
+    return json.dumps(fds_obj)
 
 
 def get_display_tables_js_object():

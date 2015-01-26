@@ -5,77 +5,75 @@ from dbnormalizer.core.table.Table import Table
 
 
 class NF:
-    # def __init__(self):
-    #     self.tables = []
-    #     self.candidate_keys = {}
-    def __init__(self):
-        self.table = None
-        self.candidate_keys = []
-        self.min_cover = []
-
     def __init__(self, table):
         self.table = table
-        self.candidate_keys = self.get_candidate_keys(self.table)
-        self.min_cover = self.get_mincover(self.table)
+        self.candidate_keys = self.calculate_candidate_keys()
+        self.min_cover = self.calculate_mincover()
+
+    def get_min_cover(self):
+        return self.min_cover
+
+    def get_candidate_keys(self):
+        return self.candidate_keys
 
     # determine the nf of the table. it returns the nf, and is used in the Table class
     def determine_nf(self):
         nf = 'NF1'
-        if self.is_nf2(self.table):
+        if self.is_nf2():
             nf = 'NF2'
-            if self.is_nf3(self.table):
+            if self.is_nf3():
                 nf = 'NF3'
-                if self.is_bcnf(self.table):
+                if self.is_bcnf():
                     nf = 'BCNF'
         self.table.nf = nf
         return nf
 
-        #check isnf2,3,4 and return the nf of the table
+        # check isnf2,3,4 and return the nf of the table
 
     # def init_candidate_keys(self):
-    #     for t in self.tables:
-    #         self.candidate_keys[t] = self.get_candidate_keys(t)
+    # for t in self.tables:
+    #         self.candidate_keys[t] = self.calculate_candidate_keys(t)
 
     #get all the candidates keys for the normal forms
     # returns the set of candidate keys - list of attributes or list of list of attributes (for composite keys)
     # for example [[a], [b,c]] , where a,b,c are of type Attribute
-    def get_candidate_keys(self, table):
-        candidate_keys=[]
-        candidate_singleton=[]
-        allattrs = table.get_attributes
+    def calculate_candidate_keys(self):
+        candidate_keys = []
+        candidate_singleton = []
+        allattrs = self.table.get_attributes
         allattrnames = [n.name for n in allattrs]
-        workattrs = table.get_attributes
+        workattrs = self.table.get_attributes
         for a in allattrs:
-            cover = self.get_attr_closure([a], table)
+            cover = self.get_attr_closure([a])
             covernames = [n.name for n in cover]
             if set(allattrnames) <= set(covernames):
                 candidate_keys.append([a])
                 candidate_singleton.append(a)
-        workattrs = list(set(workattrs)-set(candidate_singleton))
+        workattrs = list(set(workattrs) - set(candidate_singleton))
         x = len(workattrs)
-        powerset=[]
-        for i in range(1,1 << x):
+        powerset = []
+        for i in range(1, 1 << x):
             powerset.append([workattrs[j] for j in range(x) if (i & (1 << j))])
         for p in powerset:
-            stop=0
-            if len(candidate_keys)>=1:
+            stop = 0
+            if len(candidate_keys) >= 1:
                 for c in candidate_keys:
                     if set(c) <= set(p):
                         stop = 1
-            if stop<1:
-                cover = self.get_attr_closure(p,table)
+            if stop < 1:
+                cover = self.get_attr_closure(p)
                 covernames = [n.name for n in cover]
                 if set(allattrnames) <= set(covernames):
                     candidate_keys.append(p)
         return candidate_keys
 
 
-    def is_prime_attribute(self, table, attribute):
+    def is_prime_attribute(self, attribute):
         is_prime_attr = False
-#        for e in self.get_candidate_keys(table):
+        #        for e in self.calculate_candidate_keys(table):
         for e in self.candidate_keys:
             enames = [n.name for n in e]
-            if set([attribute.name]) <= set(enames):
+            if {attribute.name} <= set(enames):
                 is_prime_attr = True
         return is_prime_attr
 
@@ -91,9 +89,9 @@ class NF:
     # def set_table(self, table):
     #     self.tables.append(table)
 
-    def get_attr_closure(self, attr_list, table):
-        attr1 = table.get_attributes
-        fd1 = table.get_fds
+    def get_attr_closure(self, attr_list):
+        attr1 = self.table.get_attributes
+        fd1 = self.table.get_fds
         left_closure = []
         for left in attr_list:
             for attrib in attr1:
@@ -107,7 +105,7 @@ class NF:
                 left_names = [n.name for n in left_closure]
                 if set(fdlhs) <= set(left_names):
                     for right_e in fd.get_rhs:
-                        if not(set([right_e.name]) <= set(left_names)):
+                        if not ({right_e.name} <= set(left_names)):
                             left_closure.append(right_e)
             if left_closure_len_init == len(left_closure):
                 stopper = 1
@@ -115,28 +113,27 @@ class NF:
 
     # returns a minimal cover - list of functional dependencies of a table. [fd1, fd2,...]
     # the fd's are of type FD
-    def get_mincover(self, table):
-        attrs = [attrib.name for attrib in table.get_attributes]
+    def calculate_mincover(self):
+        table = self.table
         # first step: split rhs
         fd_1 = []
-        for fd in table.get_fds:
+        for fd in self.table.get_fds:
             for right_e in fd.rhs:
-                fd_1.append(FD(fd.get_lhs,[right_e]))
-        step1_table = Table(table.get_name)
-        step1_table.set_attributes(table.get_attributes)
+                fd_1.append(FD(fd.get_lhs, [right_e]))
+        step1_table = Table(self.table.get_name)
+        step1_table.set_attributes(self.table.get_attributes)
         step1_table.set_fds(fd_1)
         # second step: check for attribute redundancy in lhs
         fd_2 = []
-        step2_table = Table(table.get_name)
-        step2_table.set_attributes(table.get_attributes)
+        step2_table = Table(self.table.get_name)
+        step2_table.set_attributes(self.table.get_attributes)
         for fd1 in step1_table.get_fds:
             if len(fd1.get_lhs) == 1:
-                fd_2.append(FD(fd1.get_lhs,fd1.get_rhs))
+                fd_2.append(FD(fd1.get_lhs, fd1.get_rhs))
             else:
-                a=fd1.get_lhs
+                a = fd1.get_lhs
                 for left in a:
-                    left_closure = []
-                    left_closure.append(left)
+                    left_closure = [left]
                     stopper = 0
                     while stopper == 0:
                         left_closure_len_init = len(left_closure)
@@ -145,28 +142,28 @@ class NF:
                             left_names = [n.name for n in left_closure]
                             if set(fdlhs) <= set(left_names):
                                 for right_e in fd.get_rhs:
-                                    if not(set([right_e.name]) < set(left_names)):
+                                    if not ({right_e.name} < set(left_names)):
                                         left_closure.append(right_e)
                         if left_closure_len_init == len(left_closure):
                             stopper = 1
                     left_closure_names = [n.name for n in left_closure]
                     for left_2 in a:
                         if left.name != left_2.name:
-                            if set([left_2.name]) <= set(left_closure_names):
+                            if {left_2.name} <= set(left_closure_names):
                                 a.remove(left_2)
-                fd_2.append(FD(a,fd1.get_rhs))
+                fd_2.append(FD(a, fd1.get_rhs))
         step2_table.set_fds(fd_2)
         # third step: remove redundant FDs
         fd_3 = []
-        step3_table = Table(table.get_name)
-        step3_table.set_attributes(table.get_attributes)
+        step3_table = Table(self.table.get_name)
+        step3_table.set_attributes(self.table.get_attributes)
         for fd1 in step2_table.get_fds:
             temp = []
             for x in step2_table.get_fds:
                 temp.append(x)
             temp.remove(fd1)
-            a=fd1.get_lhs
-            b=fd1.get_rhs
+            a = fd1.get_lhs
+            b = fd1.get_rhs
             left_closure = []
             for left in a:
                 left_closure.append(left)
@@ -178,41 +175,41 @@ class NF:
                     left_names = [n.name for n in left_closure]
                     if set(fdlhs) <= set(left_names):
                         for right_e in fd.get_rhs:
-                            if not(set([right_e.name]) <= set(left_names)):
+                            if not ({right_e.name} <= set(left_names)):
                                 left_closure.append(right_e)
                 if left_closure_len_init == len(left_closure):
                     stopper = 1
             left_closure_names = [n.name for n in left_closure]
             c = []
             for right_2 in b:
-                if not(set([right_2.name]) <= set(left_closure_names)):
+                if not ({right_2.name} <= set(left_closure_names)):
                     c.append(right_2)
-            if len(c)>0:
-                 fd_3.append(FD(a,c))
+            if len(c) > 0:
+                fd_3.append(FD(a, c))
         step3_table.set_fds(fd_3)
         return fd_3
 
     #determine if a table is in second NF, returns true/false
-    def is_nf2(self, table):
-        fds0=table.get_fds
+    def is_nf2(self):
+        fds0 = self.table.get_fds
         fds = []
         for fd in fds0:
             for right_e in fd.rhs:
-                fds.append(FD(fd.get_lhs,[right_e]))
-        ck_names=[]
+                fds.append(FD(fd.get_lhs, [right_e]))
+        ck_names = []
         for n in self.candidate_keys:
-            temp=[a.name for a in n]
+            temp = [a.name for a in n]
             ck_names.append(temp)
         try:
             for fd in fds:
                 lhs = fd.get_lhs
                 rhs = fd.get_rhs
                 for r in rhs:
-                    if not self.is_prime_attribute(table,r):
+                    if not self.is_prime_attribute(r):
                         if lhs not in self.candidate_keys:
-                            lhsn=[l.name for l in lhs]
+                            lhsn = [l.name for l in lhs]
                             for c in ck_names:
-                                if set(lhsn)< set(c):
+                                if set(lhsn) < set(c):
                                     return False
             return True
         except Exception as ex:
@@ -221,8 +218,8 @@ class NF:
 
     #differs from function in NF3 class in a way that it uses the table as an argument
     #tbd the fds and attributes in the algorithm need to be treated with respect to their class - Attribute and FD.
-    def is_nf3(self, table):
-        fds = table.get_fds
+    def is_nf3(self):
+        fds = self.table.get_fds
         lhs_is_super_key = False
         try:
             for fd in fds:
@@ -235,7 +232,7 @@ class NF:
 
                 if not lhs_is_super_key:
                     for r in rhs:
-                        if not self.is_prime_attribute(table, r):
+                        if not self.is_prime_attribute(r):
                             return False
             return True
         except Exception as ex:
@@ -243,8 +240,8 @@ class NF:
             print(ex)
 
     #same thing as above, it uses a table as an argument
-    def is_bcnf(self, table):
-        fds = table.get_fds
+    def is_bcnf(self):
+        fds = self.table.get_fds
         for fd in fds:
             lhs = fd.get_lhs
             rhs = fd.get_rhs
@@ -258,7 +255,7 @@ class NF:
 # test.init_objects()
 # schema = test.get_schema()
 # for table in schema.get_tables():
-#     print(table.get_name)
+# print(table.get_name)
 #     nf = NF(table)
 #     nf.determine_nf()
 #     print(table.nf)

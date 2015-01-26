@@ -1,3 +1,4 @@
+var connectionType = 'none';
 function simpleButton(domId, callback, server) {
     var shouldUseServer = server || false;
     $("#" + domId).on("click", function(){
@@ -32,6 +33,7 @@ function postButton(domIdButton, domIdsInput, callback) {
                     data = JSON.parse(data);
                     $('.modal').removeClass('in');
                     displayTables(data);
+                    connectionType = 'database';
                 } catch(e) {
                     $('#db-connection-error').html(data)
                 }
@@ -59,7 +61,7 @@ function insertFDButton(domIdButton, data, callback){
                 $('#attr-lhs').html('');
                 $('#attr-rhs').html('');
                 var data_id = parseInt($('.fd-elem:last-child').data('id')) + 1;
-                var fd_elem = createFdsElement(fd, table, data_id);
+                var fd_elem = createFdsElement(fd, table, data_id, false);
                 $('#table-'+table).find('.fds-list').append(fd_elem);
                 edit_button_unbind_click();
                 edit_button_bind_click();
@@ -89,13 +91,25 @@ function editFDButton(domIdButton, data, callback){
                 $('#attr-box-edit-fd').html('');
                 $('#attr-lhs-edit-fd').html('');
                 $('#attr-rhs-edit-fd').html('');
-                var fd_elem = createFdsElement(fd, table, id);
+                var fd_elem = createFdsElement(fd, table, id, false);
                 $('.fd-elem[data-id='+id+']').replaceWith(fd_elem);
                 edit_button_unbind_click()
                 edit_button_bind_click();
             }
          });
      });
+}
+
+function getMinimalCover(domIdButton, table, callback){
+    $("#"+domIdButton).on("click", function(){
+        table = $("#"+table).data('id');
+        $('.nav>li>a').removeClass('selected');
+        $("#"+domIdButton).addClass('selected');
+        $.post("/"+domIdButton, {table:table}).done(function(data){
+            data = JSON.parse(data);
+            getFDsListElement(data, table);
+        });
+    });
 }
 
 var textfiles = {}
@@ -117,6 +131,7 @@ function uploadTextfileButton(domIdButton, domIdInput, callback) {
                 $('.modal').removeClass('in');
                 data = JSON.parse(data);
                 displayTables(data);
+                connectionType = 'xml';
             });
         }
     });
@@ -146,7 +161,7 @@ function appendChildes(elem, childes){
 
 function createTableElement(table_name, table_key){
     var t = newHTMLElement('li', {'id':'table-'+table_name, class:'table-elem', 'data-id': table_key});
-    var tn_elem = newHTMLElement('div', {class:'table-name', text:table_name});
+    var tn_elem = newHTMLElement('div', {class:'table-name', text:table_name, 'data-id':table_name});
     var expand_arrow = newHTMLElement('span',{class:'glyphicon glyphicon-chevron-down'});
     tn_elem.appendChild(expand_arrow);
     t.appendChild(tn_elem);
@@ -164,7 +179,7 @@ function createTableContentElements(table){
     content.appendChild(attr_list);
     var fds = newHTMLElement('ol', {class:'fds-list'});
     $.each(table['fds'], function(i, val){
-        var fd = createFdsElement(val, table['name'], i);
+        var fd = createFdsElement(val, table['name'], i, false);
         fds.appendChild(fd);
     });
     var fds_title_elem = newHTMLElement('div', {class:'fds-title'});
@@ -187,7 +202,7 @@ function createTableAttributeElement(attr) {
     return newHTMLElement('li', {class: 'attr-elem', text:attr});
 }
 
-function createFdsElement(fds,table_name, key) {
+function createFdsElement(fds,table_name, key, remove_edit_link) {
     var fd = newHTMLElement('li', {class:'fd-elem', 'data-id': key});
     var fd_lhs = newHTMLElement('div', {class:'fds fds_lhs'});
     var fd_rhs = newHTMLElement('div', {class:'fds fds_rhs'});
@@ -200,29 +215,40 @@ function createFdsElement(fds,table_name, key) {
         var r = newHTMLElement('span', {class:'fd rhs', text:rhs});
         fd_rhs.appendChild(r);
     });
-    var fds_edit = newHTMLElement('a', {
+    fd = appendChildes(fd, [fd_lhs, gives]);
+    if(!remove_edit_link) {
+        var fds_edit = newHTMLElement('a', {
                         class:'glyphicon glyphicon-edit fds_edit_icon',
                         title: 'Edit FDs',
                         'data-id': table_name,
                         role: 'button',
                         'data-toggle':'modal',
                         href:'#editFD'
-                    });
-    fd = appendChildes(fd, [fd_lhs, gives,fds_edit, fd_rhs]);
+        });
+        fd.appendChild(fds_edit);
+    }
+    fd.appendChild(fd_rhs);
     return fd;
 }
 
 function displayTables(data) {
+    var table_list = $('#tables-list');
+    table_list.html('');
     var tables = document.createElement('ul');
     $.each(data,function(key, table){
         var table_name = table['name'];
         var t = createTableElement(table_name, key);
         var content = createTableContentElements(table);
         t.appendChild(content);
-        $('#tables-list').append(t);
+        table_list.append(t);
     });
     setTimeout(function(){
         $('.table-elem').find('.table-name').bind('click', function(e){
+            var rightContent = $('#rightContent');
+            rightContent.removeClass('hidden');
+            $('#table-detail-name').html($(this).data('id')).attr('data-id', $(this).data('id'));
+            if(connectionType == 'database')
+                rightContent.find('#checkfds_link').removeClass('disabled');
             var c = $(this).parent().find('.table-content');
             var t_arrow = $(this).find('.table-name .glyphicon');
             if(c.hasClass('visible')) {
@@ -309,4 +335,13 @@ function edit_button_bind_click(){
 
 function edit_button_unbind_click() {
     $('.fds_edit_icon').unbind('click');
+}
+
+function getFDsListElement(fds,table) {
+    var fds_list = newHTMLElement('ul', {class:'fds-list'});
+    $.each(fds, function(key,val){
+        var fd = createFdsElement(val, table, key, true);
+        fds_list.appendChild(fd);
+    });
+    $('#action-content').append(fds_list);
 }

@@ -31,21 +31,6 @@
             </div>
 
             <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Extra Actions <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">Check FDs</a></li>
-                    <li><a href="#">Calculate minimal cover</a></li>
-                    <li><a href="#">Get attribute closure</a></li>
-                    <li><a href="#">Calculation of candidate key</a></li>
-                    <li><a href="#">Normal form detection</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
-                </ul>
-            </div>
-
-            <div class="btn-group">
                 <button type="button" class="btn btn-default">Normalizer</button>
             </div>
 
@@ -61,7 +46,22 @@
             <h4>Tables</h4>
             <ul id="tables-list"></ul>
         </div>
-        <div class="col-md-8" id="rightContent"></div>
+        <div class="col-md-8 hidden" id="rightContent">
+            <h4 class="table-actions-name" id="table-detail-name" data-id="tablename">Table Name</h4>
+            <ul class="nav nav-pills" id="table-menu">
+                <li class=""><a href="#" title="calculate the minimal cover of the table" id="minimalCover">Minimal cover</a></li>
+                <li class=""><a href="#" title="Get the attribute closure for a given attribute" id="attributeClosure">Attribute closure</a></li>
+                <li class=""><a href="#" title="Calculate all the candidate keys for a table" id="candidateKeys">Candidate keys</a></li>
+                <li class=""><a href="#" title="Detect in which normal form is the table" id="normalForm">Detect Normal Form</a></li>
+                <li class="disabled" id="checkfds_link"><a href="#" title="Check if the functional dependencies are satisfied on the table (Only available with database connection)" id="checkfds">Check FDs</a></li>
+            </ul>
+            <div id="actionContent">
+                <div id="action-title"></div>
+                <div id="action-content">
+
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -240,6 +240,9 @@
 
         });
 
+        getMinimalCover("minimalCover", "table-detail-name", function(result){
+
+        });
     });
 
 
