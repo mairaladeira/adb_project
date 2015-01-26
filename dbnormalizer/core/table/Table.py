@@ -33,3 +33,16 @@ class Table:
     @property
     def get_fds(self):
         return self.fds
+
+    def get_fd_by_id(self, fd_id):
+        k = 0
+        for fd in self.fds:
+            if fd_id == k:
+                return fd
+            k += 1
+        return None
+
+    def get_attribute_by_name(self, name):
+        for attr in self.attributes:
+            if attr.get_name == name:
+                return attr

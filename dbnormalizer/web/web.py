@@ -70,18 +70,40 @@ def upload(button):
                 error = schema_structure.get_error()
                 print(error)
                 return error
-        elif button == "requestAddFD":
+        elif button == "requestFD":
             table_name = request.form['table']
             attrs = schema.get_table_attributes(table_name)
             js_object = get_add_fds_js_object(attrs)
             return js_object
         elif button == "insertFDButton":
             table_name = request.form['table']
-            lhs = request.form['lhs'].split(',')
-            rhs = request.form['rhs'].split(',')
+            lhs = []
+            rhs = []
+            lhs_list = request.form['lhs'].split(',')
+            rhs_list = request.form['rhs'].split(',')
             table = schema.get_table_by_name(table_name)
+            for l in lhs_list:
+                lhs.append(table.get_attribute_by_name(l))
+            for r in rhs_list:
+                lhs.append(table.get_attribute_by_name(r))
             fd = FD(lhs, rhs)
             table.add_fd(fd)
+            return "success"
+        elif button == "editFDButton":
+            table_name = request.form['table']
+            lhs_list = request.form['lhs'].split(',')
+            rhs_list = request.form['rhs'].split(',')
+            lhs = []
+            rhs = []
+            fd_id = request.form['id']
+            table = schema.get_table_by_name(table_name)
+            for l in lhs_list:
+                lhs.append(table.get_attribute_by_name(l))
+            for r in rhs_list:
+                lhs.append(table.get_attribute_by_name(r))
+            fd = table.get_fd_by_id(int(fd_id))
+            fd.set_lhs(lhs)
+            fd.set_rhs(rhs)
             return "success"
         return "Undefined button: " + button
     except Exception as e:

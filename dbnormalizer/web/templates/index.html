@@ -31,14 +31,15 @@
             </div>
 
             <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                        aria-expanded="false">
-                    Insert FD <span class="caret"></span>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    Extra Actions <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">Action</a></li>
-                    <li><a href="#">Another action</a></li>
-                    <li><a href="#">Something else here</a></li>
+                    <li><a href="#">Check FDs</a></li>
+                    <li><a href="#">Calculate minimal cover</a></li>
+                    <li><a href="#">Get attribute closure</a></li>
+                    <li><a href="#">Calculation of candidate key</a></li>
+                    <li><a href="#">Normal form detection</a></li>
                     <li class="divider"></li>
                     <li><a href="#">Separated link</a></li>
                 </ul>
@@ -232,6 +233,10 @@
         });
 
         insertFDButton("insertFDButton", ["add-fd-table-name", "attr-lhs", "attr-rhs"], function(result){
+
+        });
+
+        editFDButton("editFDButton", ["edit-fd-table-name", "attr-lhs-edit-fd", "attr-rhs-edit-fd"], function(result){
 
         });
 
