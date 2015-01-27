@@ -9,6 +9,7 @@ class NF:
         self.table = table
         self.candidate_keys = self.calculate_candidate_keys()
         self.min_cover = self.calculate_mincover()
+        self.violating_fds = []
 
     def get_min_cover(self):
         return self.min_cover
@@ -16,7 +17,7 @@ class NF:
     def get_candidate_keys(self):
         return self.candidate_keys
 
-    # determine the nf of the table. it returns the nf, and is used in the Table class
+    # determine the nf of the table. it returns the nf and the FDs breaking the next NF, and is used in the Table class
     def determine_nf(self):
         nf = 'NF1'
         if self.is_nf2():
@@ -27,6 +28,8 @@ class NF:
                     nf = 'BCNF'
         self.table.nf = nf
         return nf
+
+
 
         # check isnf2,3,4 and return the nf of the table
 
@@ -191,6 +194,7 @@ class NF:
 
     #determine if a table is in second NF, returns true/false
     def is_nf2(self):
+        nf_good = True
         fds0 = self.table.get_fds
         fds = []
         for fd in fds0:
@@ -210,16 +214,19 @@ class NF:
                             lhsn = [l.name for l in lhs]
                             for c in ck_names:
                                 if set(lhsn) < set(c):
-                                    return False
-            return True
+                                    self.violating_fds.append(fd)
+                                    nf_good = False
+            return nf_good
         except Exception as ex:
             print('violates_2NF exception')
             print(ex)
+
 
     #differs from function in NF3 class in a way that it uses the table as an argument
     #tbd the fds and attributes in the algorithm need to be treated with respect to their class - Attribute and FD.
     def is_nf3(self):
         fds = self.table.get_fds
+        nf_good = True
         lhs_is_super_key = False
         try:
             for fd in fds:
@@ -238,15 +245,20 @@ class NF:
                 if not lhs_is_super_key:
                     for r in rhs:
                         if not self.is_prime_attribute(r):
-                            return False
-            return True
+                            self.violating_fds.append(fd)
+                            nf_good = False
+            return nf_good
         except Exception as ex:
             print('violates_3NF excepion')
             print(ex)
 
+
+
+
     #same thing as above, it uses a table as an argument
     def is_bcnf(self):
         fds = self.table.get_fds
+        nf_good = True
         for fd in fds:
             lhs = fd.get_lhs
             lhsn=[a.name for a in lhs]
@@ -256,21 +268,27 @@ class NF:
                 ck_names.append(temp)
             rhs = fd.get_rhs
             if not lhsn in ck_names:
-                return False
+                self.violating_fds.append(fd)
+                nf_good = False
 
             # for f in lhs:
             #     if f not in self.candidate_keys:
             # for f in lhs:
             #     if f not in self.candidate_keys:
             #         return False
-        return True
+        return nf_good
+
+
 
 # from dbnormalizer.core.importdata.XMLImport import XMLImport
-# test = XMLImport(r'C:\Users\Kaiser\Documents\GitHub\adb_project\examples\test.xml',True)
+# test = XMLImport(r'C:\Users\AlexGattino\PycharmProjects\adb_project\examples\test5.xml',True)
 # test.init_objects()
 # schema = test.get_schema()
+#
 # for table in schema.get_tables():
-# print(table.get_name)
+#     print(table.get_name)
 #     nf = NF(table)
 #     nf.determine_nf()
+#     if table.nf != 'BCNF':
+#         print(nf.violating_fds)
 #     print(table.nf)
