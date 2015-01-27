@@ -102,7 +102,9 @@ function editFDButton(domIdButton, data, callback){
 
 function getMinimalCover(domIdButton, table, callback){
     $("#"+domIdButton).on("click", function(){
-        table = $("#"+table).data('id');
+        $('#action-content').html('');
+        table = $("#table-detail-name").attr('data-id');
+        console.log(table);
         $('.nav>li>a').removeClass('selected');
         $("#"+domIdButton).addClass('selected');
         $.post("/"+domIdButton, {table:table}).done(function(data){
@@ -234,6 +236,7 @@ function createFdsElement(fds,table_name, key, remove_edit_link) {
 function displayTables(data) {
     var table_list = $('#tables-list');
     table_list.html('');
+    $('#rightContent').addClass('hidden');
     var tables = document.createElement('ul');
     $.each(data,function(key, table){
         var table_name = table['name'];
@@ -245,19 +248,24 @@ function displayTables(data) {
     setTimeout(function(){
         $('.table-elem').find('.table-name').bind('click', function(e){
             var rightContent = $('#rightContent');
-            rightContent.removeClass('hidden');
-            $('#table-detail-name').html($(this).data('id')).attr('data-id', $(this).data('id'));
-            if(connectionType == 'database')
-                rightContent.find('#checkfds_link').removeClass('disabled');
+            $('#action-content').html('');
+            $('#table-menu li a').removeClass('selected');
             var c = $(this).parent().find('.table-content');
             var t_arrow = $(this).find('.table-name .glyphicon');
             if(c.hasClass('visible')) {
+                rightContent.addClass('hidden');
                 c.removeClass('visible');
-                t_arrow.removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down')
+                t_arrow.removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
                 c.fadeOut(250);
             } else {
+                rightContent.removeClass('hidden');
+                $('#table-detail-name').html($(this).data('id')).attr('data-id', $(this).data('id'));
+                if(connectionType == 'database')
+                    rightContent.find('#checkfds_link').removeClass('disabled');
+                $('.table-content').removeClass('visible').css('display', 'none');
+                $('.table-name .glyphicon').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
                 c.addClass('visible');
-                t_arrow.removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up')
+                t_arrow.removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
                 c.fadeIn(250);
             }
         });

@@ -230,7 +230,13 @@ body {
 }
 
 #action-content .fds-list .fd-elem .fds.fds_lhs{
-    padding-right: 80px;
+    padding-right: 10px;
+    width: auto;
+}
+
+#action-content .fds-list .fd-elem .fds.fds_rhs{
+    width: auto;
+    padding-left: 10px;
 }
 
 #rightContent .nav {
