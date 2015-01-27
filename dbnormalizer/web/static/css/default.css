@@ -270,3 +270,27 @@ body {
     clear: both;
     margin-top: 15px;
 }
+
+#check-fd-list .fd-elem .fds, #check-fd-list .fd-elem .glyphicon {
+    float: left;
+}
+
+.glyphicon-ok {
+    color: #3c763d;
+}
+
+
+.glyphicon-remove {
+    color: #a94442;
+    padding-top: 2px;
+}
+
+#check-fd-list .not-satisfied {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+#check-fd-list .satisfied {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}

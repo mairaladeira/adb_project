@@ -152,8 +152,22 @@ function detectNormalForm(domIdButton, callback){
             var nf = newHTMLElement('b', {text: data});
             element.appendChild(nf);
             $('#action-content').append(element);
-            console.log(data)
         });
+    });
+}
+
+function checkFDs(domIdButton, callback){
+    $("#"+domIdButton).on("click", function() {
+        if(!$(this).parent().hasClass('disabled')){
+            $('#action-content').html('');
+            var table = $("#table-detail-name").attr('data-id');
+            $('.nav>li>a').removeClass('selected');
+            $("#" + domIdButton).addClass('selected');
+            $.post("/"+domIdButton, {table:table}).done(function(data){
+                data = JSON.parse(data);
+                get_checkFDs_HTML(data, table)
+            });
+        }
     });
 }
 
@@ -434,7 +448,6 @@ function getAttributeSelector(attributes, table){
                 var title = newHTMLElement('h6', {text:'Attribute Closure for attributes: '+attrs.toString()});
                 var attr_l = newHTMLElement('ul', {class:'attr-list'});
                 $.each(data, function(key, val){
-                    console.log('hi');
                     var attr = newHTMLElement('li', {class:'attr-elem', text:val, 'data-id':key});
                     attr_l.appendChild(attr);
                 });
@@ -461,4 +474,25 @@ function getCandidateKeysHTML(keys) {
         list.appendChild(key_elem)
     });
     $('#action-content').append(title).append(list);
+}
+
+
+function get_checkFDs_HTML(checked_fds, table) {
+    var holdTitle = newHTMLElement('h6', {text: 'Functional dependencies:'})
+    var fds_list = newHTMLElement('ul', {class:'fds-list', id:'check-fd-list'})
+    $.each(checked_fds['hold'], function(key, val){
+        var fd = createFdsElement(val, table, key, true);
+        fd.className = fd.className + ' satisfied';
+        var icon = newHTMLElement('span', {class:'glyphicon glyphicon-ok'});
+        fd.appendChild(icon);
+        fds_list.appendChild(fd);
+    });
+    $.each(checked_fds['not_hold'], function(key, val){
+        var fd = createFdsElement(val, table, key, true);
+        var icon = newHTMLElement('span', {class:'glyphicon glyphicon-remove'});
+        fd.appendChild(icon);
+        fd.className = fd.className + ' not-satisfied';
+        fds_list.appendChild(fd);
+    });
+    $('#action-content').append(holdTitle).append(fds_list);
 }
