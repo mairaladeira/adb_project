@@ -104,7 +104,6 @@ function getMinimalCover(domIdButton, table, callback){
     $("#"+domIdButton).on("click", function(){
         $('#action-content').html('');
         table = $("#table-detail-name").attr('data-id');
-        console.log(table);
         $('.nav>li>a').removeClass('selected');
         $("#"+domIdButton).addClass('selected');
         $.post("/"+domIdButton, {table:table}).done(function(data){
@@ -113,6 +112,20 @@ function getMinimalCover(domIdButton, table, callback){
         });
     });
 }
+
+function getAttributeClosure(domIdButton, table, callback){
+    $("#"+domIdButton).on("click", function(){
+        $('#action-content').html('');
+        table = $("#table-detail-name").attr('data-id');
+        $('.nav>li>a').removeClass('selected');
+        $("#"+domIdButton).addClass('selected');
+        $.post("/"+domIdButton, {table:table}).done(function(data){
+            data = JSON.parse(data);
+            getAttributeSelector(data, table);
+        });
+    });
+}
+
 
 var textfiles = {}
 function uploadTextfileButton(domIdButton, domIdInput, callback) {
@@ -297,7 +310,7 @@ function generate_fd_list_elem(parent) {
 }
 
 function create_addFd_attr_list(attributes) {
-    var attr_list = $('#attr-box')
+    var attr_list = $('#attr-box');
     $.each(attributes, function(key, attr){
         var a = newHTMLElement('li', {class:'attr-elem', 'data-id': 'attr-'+key, text:attr});
         attr_list.append(a);
@@ -352,4 +365,53 @@ function getFDsListElement(fds,table) {
         fds_list.appendChild(fd);
     });
     $('#action-content').append(fds_list);
+}
+
+function getAttributeSelector(attributes, table){
+    var selector = newHTMLElement('select', {class:'form-control', id:"attr-selector"});
+    var option = newHTMLElement('option', {value:'none', text:'Select Attribute'});
+    selector.appendChild(option);
+    var attr_list_elem = newHTMLElement('div', {class:'elem-list'});
+    var attr_list = newHTMLElement('ul', {class:'sortable-box', id:'av-attr-box'});
+    var attr_list_title = newHTMLElement('h6', {text:'Available attributes'});
+    $.each(attributes, function(key,attr){
+        var a = newHTMLElement('li', {class:'attr-elem', 'data-id': 'attr-'+key, text:attr});
+        attr_list.appendChild(a);
+    });
+    attr_list_elem = appendChildes(attr_list_elem, [attr_list_title, attr_list]);
+
+    var selected_attr_list_elem = newHTMLElement('div', {class:'elem-list last'});
+    var selected_attr_list_title = newHTMLElement('h6', {text:'Selected attributes'});
+    var selected_attr_list = newHTMLElement('ul', {class:'sortable-box', id:'sl-attr-box'});
+    var confirmation_button = newHTMLElement('button', {type:'button', class:'btn btn-primary', id:'attr-selector',text:'Calculate closure'})
+    selected_attr_list_elem = appendChildes(selected_attr_list_elem, [selected_attr_list_title, selected_attr_list]);
+    $('#action-content').append(attr_list_elem).append(selected_attr_list_elem).append(confirmation_button);
+    $(function() {
+        $( "#av-attr-box, #sl-attr-box" ).sortable({
+          connectWith: ".sortable-box"
+        }).disableSelection();
+    });
+    setTimeout(function(){
+        $("#attr-selector").bind("click",function(){
+            var attrs = [];
+            $('#attr-list-wrap').remove();
+            $.each($("#sl-attr-box").find('li'), function(){
+                attrs.push($(this).html());
+            });
+            $.post("/getAttributeClosure", {table: table, attributes: attrs.toString()}).done(function(data){
+                data = JSON.parse(data);
+                var wrap = newHTMLElement('div', {id:'attr-list-wrap'});
+                var title = newHTMLElement('h6', {text:'Attribute Closure for attributes: '+attrs.toString()});
+                var attr_l = newHTMLElement('ul', {class:'attr-list'});
+                $.each(data, function(key, val){
+                    console.log('hi');
+                    var attr = newHTMLElement('li', {class:'attr-elem', text:val, 'data-id':key});
+                    attr_l.appendChild(attr);
+                });
+                wrap = appendChildes(wrap, [title, attr_l]);
+                $('#action-content').append(wrap);
+            })
+
+        });
+    }, 1000);
 }

@@ -226,7 +226,6 @@ body {
 
 #action-content .fds-list {
     float: left;
-    padding-left: 15px;
 }
 
 #action-content .fds-list .fd-elem .fds.fds_lhs{
@@ -246,4 +245,28 @@ body {
 .nav>li>a.selected {
     text-decoration: none;
     background-color: #eee;
+}
+
+#attr-selector {
+    float: right;
+    width: auto;
+}
+
+#action-content {
+    padding: 0 15px;
+}
+
+#action-content .elem-list {
+    width: 49%;
+    float: left;
+}
+
+#action-content .elem-list.last {
+    float: right;
+}
+
+#attr-list-wrap {
+    float: left;
+    clear: both;
+    margin-top: 15px;
 }

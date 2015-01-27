@@ -71,10 +71,10 @@ def upload(button):
                 error = schema_structure.get_error()
                 print(error)
                 return error
-        elif button == "requestFD":
+        elif button == "requestFD" or button == "attributeClosure":
             table_name = request.form['table']
             attrs = schema.get_table_attributes(table_name)
-            js_object = get_add_fds_js_object(attrs)
+            js_object = get_attr_list_js(attrs)
             return js_object
         elif button == "insertFDButton":
             table_name = request.form['table']
@@ -113,6 +113,16 @@ def upload(button):
             mc = nf.get_min_cover()
             js_object = get_display_fd_js_object(mc)
             return js_object
+        elif button == "getAttributeClosure":
+            table_name = request.form['table']
+            table = schema.get_table_by_name(table_name)
+            attributes = []
+            attr_list = request.form['attributes'].split(',')
+            for attr in attr_list:
+                attributes.append(table.get_attribute_by_name(attr))
+            nf = NF(table)
+            ac = nf.get_attr_closure(attributes)
+            return get_attr_list_js(ac)
         return "Undefined button: " + button
     except Exception as e:
         print(str(e))
@@ -137,7 +147,7 @@ def get_display_tables_js_object():
     return json.dumps(tables_data)
 
 
-def get_add_fds_js_object(attributes):
+def get_attr_list_js(attributes):
     attr_list = []
     for attr in attributes:
         attr_list.append(attr.get_name)

@@ -219,27 +219,17 @@
 </body>
 <script>
     $(function(){
-        uploadTextfileButton("xmlButton", "xmlInput", function(result){
-            $.each(function(table){
-                console.log(table)
-            });
-        });
+        uploadTextfileButton("xmlButton", "xmlInput", function(result){});
 
-        postButton("insertDBButton", ["insertdb-url","insertdb-user","insertdb-pwd", "insertdb-database", "insertdb-schema"], function(result){
-            alert(result);
-        });
+        postButton("insertDBButton", ["insertdb-url","insertdb-user","insertdb-pwd", "insertdb-database", "insertdb-schema"], function(result){});
 
-        insertFDButton("insertFDButton", ["add-fd-table-name", "attr-lhs", "attr-rhs"], function(result){
+        insertFDButton("insertFDButton", ["add-fd-table-name", "attr-lhs", "attr-rhs"], function(result){});
 
-        });
+        editFDButton("editFDButton", ["edit-fd-table-name", "attr-lhs-edit-fd", "attr-rhs-edit-fd"], function(result){});
 
-        editFDButton("editFDButton", ["edit-fd-table-name", "attr-lhs-edit-fd", "attr-rhs-edit-fd"], function(result){
+        getMinimalCover("minimalCover", "table-detail-name", function(result){});
 
-        });
-
-        getMinimalCover("minimalCover", "table-detail-name", function(result){
-
-        });
+        getAttributeClosure("attributeClosure", "table-detail-name", function(result){});
     });
 
 
