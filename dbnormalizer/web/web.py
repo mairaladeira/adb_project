@@ -123,10 +123,25 @@ def upload(button):
             nf = NF(table)
             ac = nf.get_attr_closure(attributes)
             return get_attr_list_js(ac)
+        elif button == "candidateKeys":
+            table_name = request.form['table']
+            table = schema.get_table_by_name(table_name)
+            nf = NF(table)
+            ck = nf.get_candidate_keys()
+            return get_candidate_keys_js(ck)
         return "Undefined button: " + button
     except Exception as e:
         print(str(e))
 
+
+def get_candidate_keys_js(keys):
+    js_object = []
+    for key in keys:
+        attr_list = []
+        for attr in key:
+            attr_list.append(attr.get_name)
+        js_object.append(attr_list)
+    return json.dumps(js_object)
 
 def get_display_fd_js_object(fds):
     fds_obj = get_fds_list(fds)

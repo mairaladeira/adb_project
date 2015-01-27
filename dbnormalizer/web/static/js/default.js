@@ -100,10 +100,10 @@ function editFDButton(domIdButton, data, callback){
      });
 }
 
-function getMinimalCover(domIdButton, table, callback){
+function getMinimalCover(domIdButton, callback){
     $("#"+domIdButton).on("click", function(){
         $('#action-content').html('');
-        table = $("#table-detail-name").attr('data-id');
+        var table = $("#table-detail-name").attr('data-id');
         $('.nav>li>a').removeClass('selected');
         $("#"+domIdButton).addClass('selected');
         $.post("/"+domIdButton, {table:table}).done(function(data){
@@ -113,15 +113,28 @@ function getMinimalCover(domIdButton, table, callback){
     });
 }
 
-function getAttributeClosure(domIdButton, table, callback){
+function getAttributeClosure(domIdButton, callback){
     $("#"+domIdButton).on("click", function(){
         $('#action-content').html('');
-        table = $("#table-detail-name").attr('data-id');
+        var table = $("#table-detail-name").attr('data-id');
         $('.nav>li>a').removeClass('selected');
         $("#"+domIdButton).addClass('selected');
         $.post("/"+domIdButton, {table:table}).done(function(data){
             data = JSON.parse(data);
             getAttributeSelector(data, table);
+        });
+    });
+}
+
+function getCandidateKeys(domIdButton, callback){
+    $("#"+domIdButton).on("click", function(){
+        $('#action-content').html('');
+        var table = $("#table-detail-name").attr('data-id');
+        $('.nav>li>a').removeClass('selected');
+        $("#"+domIdButton).addClass('selected');
+        $.post("/"+domIdButton, {table:table}).done(function(data){
+            data = JSON.parse(data);
+            getCandidateKeysHTML(data);
         });
     });
 }
@@ -414,4 +427,21 @@ function getAttributeSelector(attributes, table){
 
         });
     }, 1000);
+}
+
+function getCandidateKeysHTML(keys) {
+    var title = newHTMLElement('h6', {text:'Candidate keys: '});
+    var list = newHTMLElement('ul', {class:'candidate-keys-list'});
+    $.each(keys, function(key, attributes){
+        var text = '';
+        $.each(attributes, function(k, attr){
+            if (k == 0)
+                text += attr;
+            else
+                text += ', '+attr;
+        });
+        var key_elem = newHTMLElement('li', {class:'key-elem', 'data-id':'key-'+key, text: text});
+        list.appendChild(key_elem)
+    });
+    $('#action-content').append(title).append(list);
 }

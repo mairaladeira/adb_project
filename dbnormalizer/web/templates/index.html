@@ -227,9 +227,11 @@
 
         editFDButton("editFDButton", ["edit-fd-table-name", "attr-lhs-edit-fd", "attr-rhs-edit-fd"], function(result){});
 
-        getMinimalCover("minimalCover", "table-detail-name", function(result){});
+        getMinimalCover("minimalCover", function(result){});
 
-        getAttributeClosure("attributeClosure", "table-detail-name", function(result){});
+        getAttributeClosure("attributeClosure", function(result){});
+
+        getCandidateKeys("candidateKeys", function(result){});
     });
 
 
