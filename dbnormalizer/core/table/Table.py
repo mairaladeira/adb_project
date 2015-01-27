@@ -8,6 +8,13 @@ class Table:
         self.attributes = []
         #Table fds will be a list of fd objects
         self.fds = []
+        #pk is just a list of strings, eases comparing if an attribute is pk
+        self.pk = []
+        #for tables imported from the db
+        self.imported_fk = []
+        self.exported_fk = []
+        #to add when generating a normalization proposal
+        self.f_keys = []
         self.nf = 'not defined'
 
     def set_attributes(self, attributes):
@@ -26,7 +33,8 @@ class Table:
 
     @property
     def get_name(self):
-        return self.n
+        return self.name
+
     @property
     def get_attributes(self):
         return self.attributes
