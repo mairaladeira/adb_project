@@ -26,8 +26,7 @@ class Table:
 
     @property
     def get_name(self):
-        return self.name
-
+        return self.n
     @property
     def get_attributes(self):
         return self.attributes

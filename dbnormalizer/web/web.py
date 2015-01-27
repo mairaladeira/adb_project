@@ -101,7 +101,7 @@ def upload(button):
             for l in lhs_list:
                 lhs.append(table.get_attribute_by_name(l))
             for r in rhs_list:
-                lhs.append(table.get_attribute_by_name(r))
+                rhs.append(table.get_attribute_by_name(r))
             fd = table.get_fd_by_id(int(fd_id))
             fd.set_lhs(lhs)
             fd.set_rhs(rhs)
@@ -129,6 +129,11 @@ def upload(button):
             nf = NF(table)
             ck = nf.get_candidate_keys()
             return get_candidate_keys_js(ck)
+        elif button == "normalForm":
+            table_name = request.form['table']
+            table = schema.get_table_by_name(table_name)
+            nf = NF(table)
+            return nf.determine_nf()
         return "Undefined button: " + button
     except Exception as e:
         print(str(e))
