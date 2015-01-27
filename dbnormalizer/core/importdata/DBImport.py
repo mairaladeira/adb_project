@@ -38,16 +38,22 @@ class DBImport:
 
     def map_tables(self):
         mapped = Schema(self.schema)
+        mapped.import_from_db = True
         for table_name in self.inspector.get_table_names(schema=self.schema):
             new_table = Table(table_name)
             columns = self.inspector.get_columns(table_name, self.schema)
+            primary_key = self.inspector.get_pk_constraint(table_name, self.schema)
+            foreign_import = self.inspector.get_foreign_keys(table_name, self.schema)
             attributes = []
             for c in columns:
                 attr_new = Attribute(c['name'])
                 attr_new.set_type(c['type'])
                 attributes.append(attr_new)
+                if c['name'] in primary_key['constrained_columns']:
+                    new_table.pk.append(c['name'])
+                elif c['name'] in foreign_import:
+                    new_table.imported_fk.append(c['name'])
             new_table.set_attributes(attributes)
-            primary_key = self.inspector.get_pk_constraint(table_name, self.schema)
             if primary_key['constrained_columns']:
                 fds = self.construct_fd_from_pk(primary_key['constrained_columns'], attributes)
                 new_table.fds = fds
@@ -141,7 +147,7 @@ class DBImport:
 
 
 # proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='adb_test', dbschema='test')
-# #proba.print_table_info()
+# proba.print_table_info()
 # maped = proba.map_tables()
 # lhs =[]
 # lhs.append(Attribute('c'))
@@ -150,6 +156,8 @@ class DBImport:
 # notfd = FD(lhs, rhs)
 # for t in maped.get_tables():
 #     if t.name == 'testing':
+#         print(t.pk)
+#         t.determine_nf()
 #         t.add_fd(notfd)
 #     result = proba.check_fds_hold(t.get_fds, t)
 #     print("FDs in table - added user: ")

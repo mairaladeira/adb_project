@@ -31,7 +31,7 @@ function postButton(domIdButton, domIdsInput, callback) {
             success: function(data){
                 try {
                     data = JSON.parse(data);
-                    $('.modal').removeClass('in');
+                    $('.modal').removeClass('in').fadeOut(250);
                     displayTables(data);
                     connectionType = 'database';
                 } catch(e) {
@@ -56,7 +56,7 @@ function insertFDButton(domIdButton, data, callback){
         var fd = {lhs: lhs, rhs: rhs};
         $.post("/"+domIdButton, {table: table, lhs: lhs.toString(), rhs: rhs.toString()}).done(function(data){
             if(data == "success"){
-                $('.modal').removeClass('in');
+                $('.modal').removeClass('in').fadeOut(250);
                 $('#attr-box').html('');
                 $('#attr-lhs').html('');
                 $('#attr-rhs').html('');
@@ -76,6 +76,7 @@ function editFDButton(domIdButton, data, callback){
 
          var table = $("#"+data[0]).html();
          var lhs = [];
+         console.log(data);
          $.each($("#"+data[1]).find('li'), function(){
             lhs.push($(this).html());
          });
@@ -85,9 +86,10 @@ function editFDButton(domIdButton, data, callback){
          });
          var id = $(this).data('id');
          var fd = {lhs: lhs, rhs: rhs};
+         console.log(fd);
          $.post("/"+domIdButton, {table: table, lhs: lhs.toString(), rhs: rhs.toString(), id: id}).done(function(data){
             if(data == "success"){
-                $('.modal').removeClass('in');
+                $('.modal').removeClass('in').fadeOut(250);
                 $('#attr-box-edit-fd').html('');
                 $('#attr-lhs-edit-fd').html('');
                 $('#attr-rhs-edit-fd').html('');
@@ -139,6 +141,21 @@ function getCandidateKeys(domIdButton, callback){
     });
 }
 
+function detectNormalForm(domIdButton, callback){
+    $("#"+domIdButton).on("click", function(){
+        $('#action-content').html('');
+        var table = $("#table-detail-name").attr('data-id');
+        $('.nav>li>a').removeClass('selected');
+        $("#"+domIdButton).addClass('selected');
+        $.post("/"+domIdButton, {table:table}).done(function(data){
+            var element = newHTMLElement('h6', {class:'nf', text:'The table '+table+' is on: '});
+            var nf = newHTMLElement('b', {text: data});
+            element.appendChild(nf);
+            $('#action-content').append(element);
+            console.log(data)
+        });
+    });
+}
 
 var textfiles = {}
 function uploadTextfileButton(domIdButton, domIdInput, callback) {
@@ -156,7 +173,7 @@ function uploadTextfileButton(domIdButton, domIdInput, callback) {
         if (domIdButton in textfiles) {
             $.post("/" + domIdButton, {data: textfiles[domIdButton]}).done(
             function( data ) {
-                $('.modal').removeClass('in');
+                $('.modal').removeClass('in').fadeOut(250);
                 data = JSON.parse(data);
                 displayTables(data);
                 connectionType = 'xml';

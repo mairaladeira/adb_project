@@ -5,6 +5,7 @@ class Schema:
     def __init__(self, name):
         self.name = name
         self.tables = []
+        self.import_from_db = False
 
     def add_table(self, table):
         self.tables.append(table)
