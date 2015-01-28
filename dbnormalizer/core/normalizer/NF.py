@@ -20,6 +20,9 @@ class NF:
     def get_violating_fds(self):
         return self.violating_fds
 
+    def get_table(self):
+        return self.table
+
     # determine the nf of the table. it returns the nf and the FDs breaking the next NF, and is used in the Table class
     def determine_nf(self):
         nf = 'NF1'

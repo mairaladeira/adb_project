@@ -26,6 +26,9 @@ class Table:
     def add_fd(self, fd):
         self.fds.append(fd)
 
+    def add_attr(self, attr):
+        self.attributes.add(attr)
+
 
     # tbd - implement a function which removes the fd
     # def remove_fd(self, fd):
@@ -55,3 +58,4 @@ class Table:
         for attr in self.attributes:
             if attr.get_name == name:
                 return attr
+
