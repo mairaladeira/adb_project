@@ -8,6 +8,7 @@ __author__ = 'Iva'
 
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine import reflection
+from dbnormalizer.core.table.FKey import FKey
 
 
 class DBImport:
@@ -57,6 +58,8 @@ class DBImport:
             if primary_key['constrained_columns']:
                 fds = self.construct_fd_from_pk(primary_key['constrained_columns'], attributes)
                 new_table.fds = fds
+            for fk in foreign_import:
+                new_table.imported_fk.append(FKey(fk['constrained_columns'], fk['referred_table'], fk['referred_columns']))
             mapped.add_table(new_table)
         return mapped
 
@@ -155,6 +158,7 @@ class DBImport:
 # rhs.append(Attribute('d'))
 # notfd = FD(lhs, rhs)
 # for t in maped.get_tables():
+#     print(t.imported_fk)
 #     if t.name == 'testing':
 #         print(t.pk)
 #         t.determine_nf()
