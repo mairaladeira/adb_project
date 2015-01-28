@@ -128,7 +128,7 @@ body {
 
 .fds.fds_rhs {
     float: right;
-    width: 55%;
+    width: 48%;
 }
 
 .glyphicon-arrow-right {
@@ -217,6 +217,19 @@ body {
     text-decoration: none;
 }
 
+.fds_remove_icon.glyphicon-remove {
+    float: right;
+    cursor: pointer;
+    padding: 0 10px 5px 0;
+    text-decoration: none;
+    color: #333333;
+    margin-top: 6px;
+}
+.fds_remove_icon.glyphicon-remove:hover {
+    color: #AAAAAA;
+    text-decoration: none;
+}
+
 .table-actions-name {
     border-bottom: 1px solid #cccccc;
     text-align: center;
@@ -269,4 +282,46 @@ body {
     float: left;
     clear: both;
     margin-top: 15px;
+}
+
+#check-fd-list .fd-elem .fds, #check-fd-list .fd-elem .glyphicon {
+    float: left;
+}
+
+.glyphicon-ok {
+    color: #3c763d;
+}
+
+
+.glyphicon-remove {
+    color: #a94442;
+    padding-top: 2px;
+}
+
+#check-fd-list .not-satisfied {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+#check-fd-list .satisfied {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.nf {
+    margin-bottom: 30px;
+}
+
+#delete-fd-confirm {
+    float: left;
+    margin-bottom: 20px;
+}
+
+#delete-fd-confirm .fds_lhs, #delete-fd-confirm .fds_rhs, #delete-fd-confirm .glyphicon-arrow-right{
+    float: left;
+    width: auto;
+}
+
+#delete-fd-confirm .fds_rhs {
+    padding-left: 5px;
 }

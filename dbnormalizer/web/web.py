@@ -12,6 +12,7 @@ from dbnormalizer.core.normalizer.NF import NF
 
 app = Flask(__name__)
 schema = []
+db_structure = None
 
 
 def open_browser():
@@ -47,12 +48,14 @@ def upload(button):
     :return:
     """
     global schema
+    global db_structure
     print(button)
     try:
         if button == "xmlButton":
             xml_data = request.form["data"]
             xml_structure = XMLImport(xml_data, False)
             xml_structure.init_objects()
+            db_structure = None
             schema = xml_structure.get_schema()
             js_object = get_display_tables_js_object()
             return js_object
@@ -62,14 +65,13 @@ def upload(button):
             pwd = request.form.get('pwd')
             db_name = request.form.get('dbName')
             schema_name = request.form.get('schema')
-            schema_structure = DBImport(url, username, pwd, schema_name, db_name)
-            if None == schema_structure.get_error():
-                schema = schema_structure.map_tables()
+            db_structure = DBImport(url, username, pwd, schema_name, db_name)
+            if None == db_structure.get_error():
+                schema = db_structure.map_tables()
                 js_object = get_display_tables_js_object()
                 return js_object
             else:
-                error = schema_structure.get_error()
-                print(error)
+                error = db_structure.get_error()
                 return error
         elif button == "requestFD" or button == "attributeClosure":
             table_name = request.form['table']
@@ -86,7 +88,7 @@ def upload(button):
             for l in lhs_list:
                 lhs.append(table.get_attribute_by_name(l))
             for r in rhs_list:
-                lhs.append(table.get_attribute_by_name(r))
+                rhs.append(table.get_attribute_by_name(r))
             fd = FD(lhs, rhs)
             table.add_fd(fd)
             return "success"
@@ -105,6 +107,13 @@ def upload(button):
             fd = table.get_fd_by_id(int(fd_id))
             fd.set_lhs(lhs)
             fd.set_rhs(rhs)
+            return "success"
+        elif button == "removeFDButton":
+            table_name = request.form['table']
+            fd_id = request.form['id']
+            table = schema.get_table_by_name(table_name)
+            fds = table.get_fds
+            del fds[int(fd_id)]
             return "success"
         elif button == "minimalCover":
             table_name = request.form['table']
@@ -133,10 +142,31 @@ def upload(button):
             table_name = request.form['table']
             table = schema.get_table_by_name(table_name)
             nf = NF(table)
-            return nf.determine_nf()
+            current_nf = nf.determine_nf()
+            violated_fd = nf.get_violating_fds()
+            js_object = get_nf_js_object(current_nf, violated_fd)
+
+            return js_object
+        elif button == "checkfds":
+            table_name = request.form['table']
+            table = schema.get_table_by_name(table_name)
+            fds_hold_object = db_structure.check_fds_hold(table.get_fds, table.get_name)
+            js_object = get_hold_fds_js_object(fds_hold_object)
+            return js_object
         return "Undefined button: " + button
     except Exception as e:
         print(str(e))
+
+
+def get_hold_fds_js_object(fds_hold_object):
+    fds_hold = get_fds_list(fds_hold_object['hold'])
+    fds_not_hold = get_fds_list(fds_hold_object['not_hold'])
+    return json.dumps({'hold': fds_hold, 'not_hold': fds_not_hold})
+
+
+def get_nf_js_object(nf, violated_fds):
+    fds_obj = get_fds_list(violated_fds)
+    return json.dumps({'nf': nf, 'violated_fds': fds_obj})
 
 
 def get_candidate_keys_js(keys):
@@ -147,6 +177,7 @@ def get_candidate_keys_js(keys):
             attr_list.append(attr.get_name)
         js_object.append(attr_list)
     return json.dumps(js_object)
+
 
 def get_display_fd_js_object(fds):
     fds_obj = get_fds_list(fds)

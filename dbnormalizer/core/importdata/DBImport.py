@@ -96,21 +96,27 @@ class DBImport:
             fk = self.inspector.get_foreign_keys(table_name, self.schema)
             print("\tForeign keys:  ", fk)
 
-    def check_fds_hold(self, fds, table):
+    def check_fds_hold(self, fds, table_name):
         fd_hold = []
         fd_not_hold = []
         holds = False
         if isinstance(fds, list):
             for one_fd in fds:
-                holds = self.check_fd_hold(one_fd, table)
+                holds = self.check_fd_hold(one_fd, table_name)
                 if holds:
                     fd_hold.append(one_fd)
+                else:
+                    fd_not_hold.append(one_fd)
         else:
-            holds = self.check_fd_hold(fds, table)
-            fd_hold.append(fds)
-        return fd_hold
+            holds = self.check_fd_hold(fds, table_name)
+            if holds:
+                fd_hold.append(fds)
+            else:
+                fd_not_hold.append(fds)
+        fds_situation = {'hold': fd_hold, 'not_hold': fd_not_hold}
+        return fds_situation
 
-    def check_fd_hold(self, one_fd, table):
+    def check_fd_hold(self, one_fd, table_name):
         try:
             group_left = []
             lhs = one_fd.get_lhs
@@ -132,7 +138,7 @@ class DBImport:
             string2 = ", ".join(str(x) for x in group_right)
 
             query = "select count(*) as count from (select distinct " + string1 + ", " \
-                    + string2 + " from " + str(self.schema) + "." + str(table.name) \
+                    + string2 + " from " + str(self.schema) + "." + str(table_name) \
                     + ") as temptable group by " + string1 + " having count(*) > 1"
 
             #print(query)

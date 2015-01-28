@@ -76,7 +76,6 @@ function editFDButton(domIdButton, data, callback){
 
          var table = $("#"+data[0]).html();
          var lhs = [];
-         console.log(data);
          $.each($("#"+data[1]).find('li'), function(){
             lhs.push($(this).html());
          });
@@ -86,7 +85,6 @@ function editFDButton(domIdButton, data, callback){
          });
          var id = $(this).data('id');
          var fd = {lhs: lhs, rhs: rhs};
-         console.log(fd);
          $.post("/"+domIdButton, {table: table, lhs: lhs.toString(), rhs: rhs.toString(), id: id}).done(function(data){
             if(data == "success"){
                 $('.modal').removeClass('in').fadeOut(250);
@@ -100,6 +98,28 @@ function editFDButton(domIdButton, data, callback){
             }
          });
      });
+}
+
+function deleteFDButton(domIdButton, domIdTable, callback){
+    $("#"+domIdButton).bind("click", function(){
+        var table = $("#"+domIdTable).html();
+        var id = $(this).attr('data-id');
+        console.log('from dialog box'+ id);
+        $.post("/"+domIdButton, {table: table, id: id}).done(function(data){
+            $('.modal').removeClass('in').fadeOut(250);
+            if(data == "success") {
+                $('#table-'+table).find('.fd-elem').each(function(){
+                    var data_id = $(this).data('id');
+                    if(data_id == id)
+                        $(this).remove()
+                    else if(data_id > id) {
+                        var new_data_id = data_id - 1;
+                        $(this).attr('data-id', new_data_id);
+                    }
+                });
+            }
+        });
+    });
 }
 
 function getMinimalCover(domIdButton, callback){
@@ -148,12 +168,33 @@ function detectNormalForm(domIdButton, callback){
         $('.nav>li>a').removeClass('selected');
         $("#"+domIdButton).addClass('selected');
         $.post("/"+domIdButton, {table:table}).done(function(data){
-            var element = newHTMLElement('h6', {class:'nf', text:'The table '+table+' is on: '});
-            var nf = newHTMLElement('b', {text: data});
+            data = JSON.parse(data);
+            var element = newHTMLElement('h5', {class:'nf', text:'The table '+table+' is on: '});
+            var nf = newHTMLElement('b', {text: data['nf']});
             element.appendChild(nf);
-            $('#action-content').append(element);
-            console.log(data)
+            var violation_title = newHTMLElement('h6', {text: 'Functional dependencies that violate the normal form:'})
+            var fds_list = newHTMLElement('ul', {class:'fds-list', id:'check-fd-list'})
+            $.each(data['violated_fds'], function(key, val){
+                var fd = createFdsElement(val, table, key, true);
+                fds_list.appendChild(fd);
+            });
+            $('#action-content').append(element).append(violation_title).append(fds_list);
         });
+    });
+}
+
+function checkFDs(domIdButton, callback){
+    $("#"+domIdButton).on("click", function() {
+        if(!$(this).parent().hasClass('disabled')){
+            $('#action-content').html('');
+            var table = $("#table-detail-name").attr('data-id');
+            $('.nav>li>a').removeClass('selected');
+            $("#" + domIdButton).addClass('selected');
+            $.post("/"+domIdButton, {table:table}).done(function(data){
+                data = JSON.parse(data);
+                get_checkFDs_HTML(data, table)
+            });
+        }
     });
 }
 
@@ -247,7 +288,7 @@ function createTableAttributeElement(attr) {
     return newHTMLElement('li', {class: 'attr-elem', text:attr});
 }
 
-function createFdsElement(fds,table_name, key, remove_edit_link) {
+function createFdsElement(fds,table_name, key, remove_edition_link) {
     var fd = newHTMLElement('li', {class:'fd-elem', 'data-id': key});
     var fd_lhs = newHTMLElement('div', {class:'fds fds_lhs'});
     var fd_rhs = newHTMLElement('div', {class:'fds fds_rhs'});
@@ -261,16 +302,25 @@ function createFdsElement(fds,table_name, key, remove_edit_link) {
         fd_rhs.appendChild(r);
     });
     fd = appendChildes(fd, [fd_lhs, gives]);
-    if(!remove_edit_link) {
+    if(!remove_edition_link) {
         var fds_edit = newHTMLElement('a', {
                         class:'glyphicon glyphicon-edit fds_edit_icon',
-                        title: 'Edit FDs',
+                        title: 'Edit FD',
                         'data-id': table_name,
                         role: 'button',
                         'data-toggle':'modal',
                         href:'#editFD'
         });
         fd.appendChild(fds_edit);
+        var fds_remove = newHTMLElement('a', {
+                        class:'glyphicon glyphicon-remove fds_remove_icon',
+                        title: 'Remove FD',
+                        'data-id': table_name,
+                        role: 'button',
+                        'data-toggle':'modal',
+                        href:'#deleteFD'
+        });
+        fd.appendChild(fds_remove);
     }
     fd.appendChild(fd_rhs);
     return fd;
@@ -382,10 +432,22 @@ function edit_button_bind_click(){
             create_editFD_lists(data, list_of_attr);
         });
     });
+    $('.fds_remove_icon').bind('click', function(e){
+        var table = $(this).data('id');
+        var parent = $(this).parent();
+        var id = parent.data('id');
+        console.log('from fd'+id);
+        $('#removeFDButton').attr('data-id', id);
+        $(".modal-title #remove-fd-table-name").html( table );
+        var delete_fd_confirm = $('#delete-fd-confirm');
+        delete_fd_confirm.find('.fds_lhs').html(parent.find('.fds_lhs').html());
+        delete_fd_confirm.find('.fds_rhs').html(parent.find('.fds_rhs').html());
+    });
 }
 
 function edit_button_unbind_click() {
     $('.fds_edit_icon').unbind('click');
+    $('.fds_remove_icon').unbind('click');
 }
 
 function getFDsListElement(fds,table) {
@@ -434,7 +496,6 @@ function getAttributeSelector(attributes, table){
                 var title = newHTMLElement('h6', {text:'Attribute Closure for attributes: '+attrs.toString()});
                 var attr_l = newHTMLElement('ul', {class:'attr-list'});
                 $.each(data, function(key, val){
-                    console.log('hi');
                     var attr = newHTMLElement('li', {class:'attr-elem', text:val, 'data-id':key});
                     attr_l.appendChild(attr);
                 });
@@ -461,4 +522,25 @@ function getCandidateKeysHTML(keys) {
         list.appendChild(key_elem)
     });
     $('#action-content').append(title).append(list);
+}
+
+
+function get_checkFDs_HTML(checked_fds, table) {
+    var holdTitle = newHTMLElement('h6', {text: 'Functional dependencies:'})
+    var fds_list = newHTMLElement('ul', {class:'fds-list', id:'check-fd-list'})
+    $.each(checked_fds['hold'], function(key, val){
+        var fd = createFdsElement(val, table, key, true);
+        fd.className = fd.className + ' satisfied';
+        var icon = newHTMLElement('span', {class:'glyphicon glyphicon-ok'});
+        fd.appendChild(icon);
+        fds_list.appendChild(fd);
+    });
+    $.each(checked_fds['not_hold'], function(key, val){
+        var fd = createFdsElement(val, table, key, true);
+        var icon = newHTMLElement('span', {class:'glyphicon glyphicon-remove'});
+        fd.appendChild(icon);
+        fd.className = fd.className + ' not-satisfied';
+        fds_list.appendChild(fd);
+    });
+    $('#action-content').append(holdTitle).append(fds_list);
 }
