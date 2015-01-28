@@ -216,6 +216,33 @@
     </div>
 </div>
 
+
+<!-- DELETE FD -->
+<div class="modal fade" id="deleteFD" tabindex="-1" role="dialog" aria-labelledby="deleteFD"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Delete fd of table <span id="remove-fd-table-name"></span></h4>
+            </div>
+            <div class="modal-body">
+                <h6>Are you sure that you want do delete the FD?</h6>
+                <div class="fd" id="delete-fd-confirm">
+                    <div class="fds fds_lhs"></div>
+                    <span class="glyphicon glyphicon-arrow-right"></span>
+                    <div class="fds fds_rhs"></div>
+                </div>
+            </div>
+            <div class="modal-footer clear">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="removeFDButton">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 <script>
     $(function(){
@@ -226,6 +253,8 @@
         insertFDButton("insertFDButton", ["add-fd-table-name", "attr-lhs", "attr-rhs"], function(result){});
 
         editFDButton("editFDButton", ["edit-fd-table-name", "attr-lhs-edit-fd", "attr-rhs-edit-fd"], function(result){});
+
+        deleteFDButton("removeFDButton", "remove-fd-table-name", function(result){});
 
         getMinimalCover("minimalCover", function(result){});
 

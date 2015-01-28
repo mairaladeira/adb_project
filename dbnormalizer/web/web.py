@@ -108,6 +108,13 @@ def upload(button):
             fd.set_lhs(lhs)
             fd.set_rhs(rhs)
             return "success"
+        elif button == "removeFDButton":
+            table_name = request.form['table']
+            fd_id = request.form['id']
+            table = schema.get_table_by_name(table_name)
+            fds = table.get_fds
+            del fds[int(fd_id)]
+            return "success"
         elif button == "minimalCover":
             table_name = request.form['table']
             table = schema.get_table_by_name(table_name)
@@ -135,7 +142,11 @@ def upload(button):
             table_name = request.form['table']
             table = schema.get_table_by_name(table_name)
             nf = NF(table)
-            return nf.determine_nf()
+            current_nf = nf.determine_nf()
+            violated_fd = nf.get_violating_fds()
+            js_object = get_nf_js_object(current_nf, violated_fd)
+
+            return js_object
         elif button == "checkfds":
             table_name = request.form['table']
             table = schema.get_table_by_name(table_name)
@@ -148,9 +159,14 @@ def upload(button):
 
 
 def get_hold_fds_js_object(fds_hold_object):
-    fds_hold = fds_obj = get_fds_list(fds_hold_object['hold'])
+    fds_hold = get_fds_list(fds_hold_object['hold'])
     fds_not_hold = get_fds_list(fds_hold_object['not_hold'])
     return json.dumps({'hold': fds_hold, 'not_hold': fds_not_hold})
+
+
+def get_nf_js_object(nf, violated_fds):
+    fds_obj = get_fds_list(violated_fds)
+    return json.dumps({'nf': nf, 'violated_fds': fds_obj})
 
 
 def get_candidate_keys_js(keys):
@@ -161,6 +177,7 @@ def get_candidate_keys_js(keys):
             attr_list.append(attr.get_name)
         js_object.append(attr_list)
     return json.dumps(js_object)
+
 
 def get_display_fd_js_object(fds):
     fds_obj = get_fds_list(fds)
