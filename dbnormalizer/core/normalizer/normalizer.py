@@ -2,7 +2,7 @@ __author__ = 'Mehreeen'
 from dbnormalizer.core.table.FD import FD
 from dbnormalizer.core.table.Table import Table
 from dbnormalizer.core.normalizer import NF
-
+from dbnormalizer.core.table.FKey import FKey
 
 class Normalizer:
     def __init__(self, normal_form):
@@ -150,7 +150,7 @@ class Normalizer:
             for fd in violating_fds:
                 attrs = fd.get_lhs + fd.get_rhs
                 a_names = [a.get_name for a in attrs]
-                new_tables[table.get_name+'_'+str(i+1)] = {'attrs': attrs, 'fds': fd}
+                new_tables[table.get_name+'_'+str(i+1)] = {'attrs': attrs, 'fds': [fd]}
                 rhs_violating += fd.get_rhs
                 i += 1
             rhs_violating_names = [a.get_name for a in rhs_violating]
@@ -177,8 +177,30 @@ class Normalizer:
             tables_bcnf = self.decomposition_bcnf(table)
             new_tables += tables_bcnf
         #store both decompositions (up to nf3 and up to bcnf)
+        self.set_foreign_keys(tables_nf3)
+        self.set_foreign_keys(new_tables)
         self.new_tables_nf3 = tables_nf3
         self.new_tables_bcnf = new_tables
+
+
+    @staticmethod
+    def set_foreign_keys(decom_list):
+        table_cknames = {}
+        for d in decom_list:
+            ck_names = []
+            normal_form = NF(d)
+            ckeys = normal_form.get_candidate_keys()
+            for e in ckeys:
+                temp = [a.name for a in e]
+                ck_names.append(temp)
+            table_cknames[d] = ck_names
+        for d1 in decom_list:
+            for d2 in decom_list:
+                if d2 != d1:
+                    for ck in table_cknames[d2]:
+                        d1_names = [n.name for n in d1.attributes]
+                        if set(ck) <= set(d1_names):
+                            d1.f_keys.append(FKey(ck, d2.name, ck))
 
 
 
@@ -193,3 +215,6 @@ class Normalizer:
 #normalization = Normalizer(nf)
 #normalization.decomposition()
 #print(normalization.get_new_tables())
+
+
+

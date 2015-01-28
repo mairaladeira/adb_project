@@ -59,3 +59,5 @@ class Table:
             if attr.get_name == name:
                 return attr
 
+    def get_foreign_keys(self):
+        return self.f_keys
