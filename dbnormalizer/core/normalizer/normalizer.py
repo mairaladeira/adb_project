@@ -7,14 +7,20 @@ from dbnormalizer.core.normalizer import NF
 class Normalizer:
     def __init__(self, normal_form):
         self.nf = normal_form
-
         # fds for the normalization
         self.fds = self.get_fds_union()
+        self.new_tables_nf3 = []
+        self.new_tables_bcnf = []
+        self.nf3_not_bcnf = False
 
-        self.new_tables = []
+    def get_new_tables_bcnd(self):
+        return self.new_tables_bcnf
 
-    def get_new_tables(self):
-        return self.new_tables
+    def get_new_tables_nf3(self):
+        return self.new_tables_nf3
+
+    def get_nf3_is_not_bcnf(self):
+        return self.nf3_not_bcnf
 
     """
     Union of fds
@@ -158,7 +164,7 @@ class Normalizer:
                 new_table_obj.set_attributes(new_tables[t]['attrs'])
                 new_table_obj.set_fds(new_tables[t]['fds'])
                 created_tables.append(new_table_obj)
-
+            self.nf3_not_bcnf = True
             return created_tables
 
         else:
@@ -170,7 +176,9 @@ class Normalizer:
         for table in tables_nf3:
             tables_bcnf = self.decomposition_bcnf(table)
             new_tables += tables_bcnf
-        self.new_tables = new_tables
+        #store both decompositions (up to nf3 and up to bcnf)
+        self.new_tables_nf3 = tables_nf3
+        self.new_tables_bcnf = new_tables
 
 
 
