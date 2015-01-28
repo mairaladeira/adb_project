@@ -1,6 +1,7 @@
 __author__ = 'Mehreeen'
 from dbnormalizer.core.table.FD import FD
 from dbnormalizer.core.table.Table import Table
+from dbnormalizer.core.normalizer import NF
 
 
 class Normalizer:
@@ -54,7 +55,7 @@ class Normalizer:
     decomposition of a table up to 3NF
     Return the new tables
     """
-    def decomposition(self):
+    def decomposition_3nf(self):
         generated_tables = {}
         generated_tables_aux = []
         new_tables = []
@@ -62,13 +63,23 @@ class Normalizer:
         old_table = self.nf.get_table()
         i = 0
 
+        min_cover = self.nf.get_min_cover()
+
         #Create a new table for each FD after the union operation
         for fd in self.fds:
             lhs = fd.get_lhs
             rhs = fd.get_rhs
             t_attr = lhs + rhs
-            generated_tables[old_table.get_name+'_'+str(i + 1)] = {'attr': t_attr, 'fds': [fd]}
+            t_fd = [fd]
+            for f in min_cover:
+                t_attr_name = [a.get_name for a in t_attr]
+                attrs = f.get_lhs + f.get_rhs
+                attrs_name = [a.get_name for a in attrs]
+                if set(t_attr_name) != set(attrs_name) and set(attrs_name) < set(t_attr_name):
+                    t_fd.append(f)
+            generated_tables[old_table.get_name+'_'+str(i + 1)] = {'attr': t_attr, 'fds': t_fd}
             generated_tables_aux.append(t_attr)
+
             for a in t_attr:
                 checked_attributes.add(a.get_name)
             i += 1
@@ -82,7 +93,9 @@ class Normalizer:
             for t_2 in generated_tables_aux:
                 attr_2 = [a.get_name for a in t_2]
                 if set(attr_1) < set(attr_2):
-                    generated_tables[old_table.get_name+'_'+str(j + 1)]['fds'].append(generated_tables[old_table.get_name+'_'+str(i + 1)]['fds'])
+                    nm1 = old_table.get_name+'_'+str(j + 1)
+                    nm2 = old_table.get_name+'_'+str(i + 1)
+                    generated_tables[nm1]['fds'].append(generated_tables[nm2]['fds'])
                     del generated_tables[old_table.get_name+'_'+str(i + 1)]
                 j += 1
             i += 1
@@ -117,7 +130,48 @@ class Normalizer:
             new_table_obj.set_attributes(cks[0])
             new_tables.append(new_table_obj)
 
+        return new_tables
+
+    def decomposition_bcnf(self, table):
+        nf_table = NF(table)
+        current_nf = nf_table.determine_nf()
+        if current_nf != 'BCNF':
+            new_tables = {}
+            violating_fds = nf_table.get_violating_fds()
+            i = 0
+            rhs_violating = []
+            created_tables = []
+            for fd in violating_fds:
+                attrs = fd.get_lhs + fd.get_rhs
+                a_names = [a.get_name for a in attrs]
+                new_tables[table.get_name+'_'+str(i+1)] = {'attrs': attrs, 'fds': fd}
+                rhs_violating += fd.get_rhs
+                i += 1
+            rhs_violating_names = [a.get_name for a in rhs_violating]
+            new_table_attr = []
+            for a in table.get_attributes:
+                if a.get_name not in rhs_violating_names:
+                    new_table_attr.append(a)
+            new_tables[table.get_name+'_'+str(i+1)] = {'attrs': new_table_attr, 'fds': []}
+            for t in new_tables:
+                new_table_obj = Table(t)
+                new_table_obj.set_attributes(new_tables[t]['attrs'])
+                new_table_obj.set_fds(new_tables[t]['fds'])
+                created_tables.append(new_table_obj)
+
+            return created_tables
+
+        else:
+            return [table]
+
+    def decomposition(self):
+        tables_nf3 = self.decomposition_3nf()
+        new_tables = []
+        for table in tables_nf3:
+            tables_bcnf = self.decomposition_bcnf(table)
+            new_tables += tables_bcnf
         self.new_tables = new_tables
+
 
 
 #from dbnormalizer.core.importdata.XMLImport import XMLImport
@@ -126,8 +180,8 @@ class Normalizer:
 #test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/slide2_p14.xml', True)
 #test.init_objects()
 #schema = test.get_schema()
-#table = schema.get_table_by_name('TEST')
-#nf = NF(table)
+#table_test = schema.get_table_by_name('TEST')
+#nf = NF(table_test)
 #normalization = Normalizer(nf)
 #normalization.decomposition()
 #print(normalization.get_new_tables())

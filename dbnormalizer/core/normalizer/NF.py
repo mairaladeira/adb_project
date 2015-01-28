@@ -273,7 +273,7 @@ class NF:
                 temp=[a.name for a in e]
                 ck_names.append(temp)
             rhs = fd.get_rhs
-            if not lhsn in ck_names:
+            if not any(set(lhsn) == set(x) for x in ck_names):
                 self.violating_fds.append(fd)
                 nf_good = False
 
