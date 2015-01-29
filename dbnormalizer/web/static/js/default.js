@@ -580,6 +580,7 @@ function getNormalizationHTML(data){
     } else {
         $('#getBCNF').addClass('hidden')
     }
+    $('#normalization-tables').find('ul.tables').html('')
     $('#normalizaton-nf').html(title);
     $.each(data['3nf'], function(key, val){
         var table = getNormalizedTableHTML(val);
