@@ -244,16 +244,17 @@ class NF:
                 for e in self.candidate_keys:
                     temp=[a.name for a in e]
                     ck_names.append(temp)
+                lhs_is_super_key = False
                 for e in ck_names:
-                    lhs_is_super_key = False
                     if set(e) == set(lhsn):
                         lhs_is_super_key = True
 
                 if not lhs_is_super_key:
                     for r in rhs:
                         if not self.is_prime_attribute(r):
-                            self.violating_fds.append(fd)
-                            nf_good = False
+                            if not fd in self.violating_fds:
+                                self.violating_fds.append(fd)
+                                nf_good = False
             return nf_good
         except Exception as ex:
             print('violates_3NF excepion')
@@ -288,7 +289,7 @@ class NF:
 
 
 # from dbnormalizer.core.importdata.XMLImport import XMLImport
-# test = XMLImport(r'C:\Users\Kaiser\Documents\GitHub\adb_project\examples\quiz_mincover.xml',True)
+# test = XMLImport(r'C:\Users\Kaiser\Documents\GitHub\adb_project\examples\ex_supplier.xml',True)
 # test.init_objects()
 # schema = test.get_schema()
 #

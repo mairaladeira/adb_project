@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+		<schema name="TEST">
+			<tableInfo>
+				<table name="TEST">
+					<attributes>
+						<attribute>supplier_no</attribute>
+						<attribute>city</attribute>
+						<attribute>zip</attribute>
+                        <attribute>supplier_name</attribute>
+					</attributes>
+					<fds>
+						<fd>
+							<lhs>
+								<attribute>supplier_no</attribute>
+							</lhs>
+							<rhs>
+						        <attribute>city</attribute>
+						        <attribute>zip</attribute>
+                                <attribute>supplier_name</attribute>
+							</rhs>
+						</fd>
+						<fd>
+							<lhs>
+								<attribute>supplier_name</attribute>
+							</lhs>
+							<rhs>
+						        <attribute>city</attribute>
+						        <attribute>zip</attribute>
+                                <attribute>supplier_no</attribute>
+							</rhs>
+						</fd>
+					</fds>
+				</table>
+			</tableInfo>
+		</schema>
+</configuration>
