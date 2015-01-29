@@ -125,6 +125,7 @@ function deleteFDButton(domIdButton, domIdTable, callback){
 function getMinimalCover(domIdButton, callback){
     $("#"+domIdButton).on("click", function(){
         $('#action-content').html('');
+        $('#normalization-content').addClass('hidden');
         var table = $("#table-detail-name").attr('data-id');
         $('.nav>li>a').removeClass('selected');
         $("#"+domIdButton).addClass('selected');
@@ -138,6 +139,7 @@ function getMinimalCover(domIdButton, callback){
 function getAttributeClosure(domIdButton, callback){
     $("#"+domIdButton).on("click", function(){
         $('#action-content').html('');
+        $('#normalization-content').addClass('hidden');
         var table = $("#table-detail-name").attr('data-id');
         $('.nav>li>a').removeClass('selected');
         $("#"+domIdButton).addClass('selected');
@@ -151,6 +153,7 @@ function getAttributeClosure(domIdButton, callback){
 function getCandidateKeys(domIdButton, callback){
     $("#"+domIdButton).on("click", function(){
         $('#action-content').html('');
+        $('#normalization-content').addClass('hidden');
         var table = $("#table-detail-name").attr('data-id');
         $('.nav>li>a').removeClass('selected');
         $("#"+domIdButton).addClass('selected');
@@ -164,6 +167,7 @@ function getCandidateKeys(domIdButton, callback){
 function detectNormalForm(domIdButton, callback){
     $("#"+domIdButton).on("click", function(){
         $('#action-content').html('');
+        $('#normalization-content').addClass('hidden');
         var table = $("#table-detail-name").attr('data-id');
         $('.nav>li>a').removeClass('selected');
         $("#"+domIdButton).addClass('selected');
@@ -187,12 +191,29 @@ function checkFDs(domIdButton, callback){
     $("#"+domIdButton).on("click", function() {
         if(!$(this).parent().hasClass('disabled')){
             $('#action-content').html('');
+            $('#normalization-content').addClass('hidden');
             var table = $("#table-detail-name").attr('data-id');
             $('.nav>li>a').removeClass('selected');
             $("#" + domIdButton).addClass('selected');
             $.post("/"+domIdButton, {table:table}).done(function(data){
                 data = JSON.parse(data);
                 get_checkFDs_HTML(data, table)
+            });
+        }
+    });
+}
+
+function normalizeTable(domIdButton, callback){
+    $("#"+domIdButton).on("click", function() {
+        if (!$(this).hasClass('disabled')) {
+            $('#action-content').html('');
+            $('#normalization-content').addClass('hidden');
+            var table = $("#table-detail-name").attr('data-id');
+            $('.nav>li>a').removeClass('selected');
+            $.post("/"+domIdButton, {table:table}).done(function(data){
+                data = JSON.parse(data);
+                console.log(data);
+                getNormalizationHTML(data);
             });
         }
     });
@@ -342,12 +363,15 @@ function displayTables(data) {
         $('.table-elem').find('.table-name').bind('click', function(e){
             var rightContent = $('#rightContent');
             $('#action-content').html('');
+            $('#normalization-content').addClass('hidden');
             $('#table-menu li a').removeClass('selected');
             var c = $(this).parent().find('.table-content');
             var t_arrow = $(this).find('.table-name .glyphicon');
             if(c.hasClass('visible')) {
                 rightContent.addClass('hidden');
                 c.removeClass('visible');
+                $('#normalizer').addClass('disabled');
+                $('#normalizationDownload').addClass('disabled');
                 t_arrow.removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
                 c.fadeOut(250);
             } else {
@@ -355,6 +379,7 @@ function displayTables(data) {
                 $('#table-detail-name').html($(this).data('id')).attr('data-id', $(this).data('id'));
                 if(connectionType == 'database')
                     rightContent.find('#checkfds_link').removeClass('disabled');
+                $('#normalizer').removeClass('disabled');
                 $('.table-content').removeClass('visible').css('display', 'none');
                 $('.table-name .glyphicon').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
                 c.addClass('visible');
@@ -543,4 +568,106 @@ function get_checkFDs_HTML(checked_fds, table) {
         fds_list.appendChild(fd);
     });
     $('#action-content').append(holdTitle).append(fds_list);
+}
+
+function getNormalizationHTML(data){
+    $('#action-content').html('');
+    $('#normalization-content').removeClass('hidden');
+    var title = 'BCNF';
+    if(data['bcnf']){
+        title = '3NF';
+        $('#getBCNF').removeClass('hidden')
+    } else {
+        $('#getBCNF').addClass('hidden')
+    }
+    $('#normalizaton-nf').html(title);
+    $.each(data['3nf'], function(key, val){
+        var table = getNormalizedTableHTML(val);
+        $('#normalization-tables').find('ul.tables').append(table);
+    });
+}
+
+function getNormalizedTableHTML(table_data) {
+    var table_html = newHTMLElement('li', {class:'normalized-table', id:'table-'+table_data['name']});
+    var tableTitle = newHTMLElement('h5', {class:'normalized-table-title', text: table_data['name']});
+    var attr_html = getNormalizedTableAttrHTML(table_data['attributes']);
+    var fds_html = getNormalizedTableFdsHTML(table_data['fds'], table_data['name']);
+    var ck_html = getNormalizedTableCKHTML(table_data['candidate_keys']);
+    var fk_html = getNormalizedTableFKHTML(table_data['f_key']);
+    table_html = appendChildes(table_html, [tableTitle, attr_html, fds_html, ck_html, fk_html]);
+    return table_html;
+}
+
+function getNormalizedTableAttrHTML(attributes) {
+    var attrs = newHTMLElement('ul', {class:'normalized-table-attributes'});
+    $.each(attributes, function(key, val){
+        var attr = newHTMLElement('li', {class:'attr', text: val});
+        attrs.appendChild(attr);
+    });
+    return attrs;
+}
+
+function getNormalizedTableFdsHTML(fds, table) {
+    var fdsWrap = newHTMLElement('div', {class:'normalized-table-fds'});
+    if(fds.length > 0) {
+        var title = newHTMLElement('h6', {text:'Functional Dependencies:'});
+        var fds_list = newHTMLElement('ul', {class:'normalized-table-fds-list'});
+        $.each(fds, function(key, val){
+            var fd = createFdsElement(val, table, key, true);
+            fds_list.appendChild(fd);
+        });
+        fdsWrap = appendChildes(fdsWrap, [title, fds_list]);
+    }
+    return fdsWrap;
+}
+
+function getNormalizedTableCKHTML(cks) {
+    var ckWrap = newHTMLElement('div', {class:'normalized-table-ck'});
+    var title = newHTMLElement('h6', {text:'Candidate keys:'});
+    var ck_list = newHTMLElement('ul', {class:'normalized-table-ck-list'});
+    $.each(cks, function(key, attributes){
+        var text = '';
+        $.each(attributes, function(k, attr){
+            if (k == 0)
+                text += attr;
+            else
+                text += ', '+attr;
+        });
+        var key_elem = newHTMLElement('li', {class:'key-elem', 'data-id':'key-'+key, text: text});
+        ck_list.appendChild(key_elem);
+    })
+    ckWrap = appendChildes(ckWrap, [title, ck_list]);
+    return ckWrap
+}
+
+function getNormalizedTableFKHTML(f_keys) {
+    var fkWrap = newHTMLElement('div', {class:'normalized-table-fk'});
+    if(f_keys.length > 0) {
+        var title = newHTMLElement('h6', {text:'Foreign keys:'});
+        var fk_list = newHTMLElement('ul', {class:'normalized-table-fk-list'});
+        $.each(f_keys, function(key, val){
+            var fk_elem = newHTMLElement('li', {class:'fk-elem'});
+            var attr_text = '';
+            $.each(val['attr'], function(k, v){
+                if (k == 0)
+                    attr_text += v;
+                else
+                    attr_text += ', '+v;
+            });
+            var attr = newHTMLElement('div', {class:'fk-attr', text: attr_text});
+            var referenced_table = newHTMLElement('div', {class:'fk-rt', text:val['referenced_table']});
+            var referenced_attr_text = '';
+            $.each(val['referenced_attribute'], function(k, v){
+                if (k == 0)
+                    referenced_attr_text += v;
+                else
+                    referenced_attr_text += ', '+v;
+            });
+            var referenced_attr = newHTMLElement('div', {class:'fk-rattr', text: referenced_attr_text});
+            fk_elem = appendChildes(fk_elem, [attr, referenced_table, referenced_attr]);
+            fk_list.appendChild(fk_elem);
+        });
+        fkWrap = appendChildes(fkWrap, [title, fk_list]);
+    }
+    return fkWrap;
 }

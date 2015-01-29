@@ -1,4 +1,5 @@
 body {
+    overflow: auto !important;
 }
 
 #content {
@@ -325,3 +326,72 @@ body {
 #delete-fd-confirm .fds_rhs {
     padding-left: 5px;
 }
+
+
+#normalization-content {
+    padding: 0 15px 50px;
+    float: left;
+}
+
+#normalization-tables .tables{
+    list-style: none;
+    padding-left: 15px;
+}
+
+.normalized-table-fds {
+    float: left;
+    padding-left: 20px;
+}
+
+.normalized-table-fds-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.normalized-table-fds-list .fds_lhs, .normalized-table-fds-list .fds_rhs, .normalized-table-fds-list .glyphicon-arrow-right {
+    float: left;
+    width: auto;
+}
+
+.normalized-table-fds-list .fds_rhs {
+    padding-left: 10px;
+}
+
+.normalized-table-ck, .normalized-table-fk, .normalized-table-ck .key-elem, .normalized-table-fk .fk-elem  {
+    float: left;
+    clear: both;
+}
+
+.normalized-table {
+    float: left;
+    clear: both;
+    padding-bottom: 30px;
+}
+
+#getBCNF {
+    float: right;
+    margin-top: 20px;
+    clear: both;
+}
+
+
+.fk-attr, .fk-rt, .fk-rattr {
+    float: left;
+    border-right: 1px solid #ccc;
+    padding: 5px 10px;
+}
+
+.fk-rattr {
+    border-right: none;
+}
+
+.fk-elem {
+   border: 1px solid #cccccc;
+}
+
+.normalized-table-fk-list {
+    float: left;
+    list-style: none;
+    padding-left: 20px;
+}
+

@@ -1,7 +1,7 @@
 __author__ = 'Mehreeen'
 from dbnormalizer.core.table.FD import FD
 from dbnormalizer.core.table.Table import Table
-from dbnormalizer.core.normalizer import NF
+from dbnormalizer.core.normalizer.NF import NF
 from dbnormalizer.core.table.FKey import FKey
 
 class Normalizer:
@@ -13,7 +13,7 @@ class Normalizer:
         self.new_tables_bcnf = []
         self.nf3_not_bcnf = False
 
-    def get_new_tables_bcnd(self):
+    def get_new_tables_bcnf(self):
         return self.new_tables_bcnf
 
     def get_new_tables_nf3(self):
@@ -82,7 +82,10 @@ class Normalizer:
                 attrs = f.get_lhs + f.get_rhs
                 attrs_name = [a.get_name for a in attrs]
                 if set(t_attr_name) != set(attrs_name) and set(attrs_name) < set(t_attr_name):
-                    t_fd.append(f)
+                    fd_lhs = [a.get_name for a in fd.get_lhs]
+                    f_lhs = [a.get_name for a in f.get_lhs]
+                    if set(fd_lhs) != set(f_lhs):
+                        t_fd += [f]
             generated_tables[old_table.get_name+'_'+str(i + 1)] = {'attr': t_attr, 'fds': t_fd}
             generated_tables_aux.append(t_attr)
 
@@ -98,10 +101,20 @@ class Normalizer:
             attr_1 = [a.get_name for a in t_1]
             for t_2 in generated_tables_aux:
                 attr_2 = [a.get_name for a in t_2]
-                if set(attr_1) < set(attr_2):
+                if set(attr_1) < set(attr_2) and set(attr_1) != set(attr_2):
                     nm1 = old_table.get_name+'_'+str(j + 1)
                     nm2 = old_table.get_name+'_'+str(i + 1)
-                    generated_tables[nm1]['fds'].append(generated_tables[nm2]['fds'])
+                    skip_fd = False
+                    for fd1 in generated_tables[nm1]['fds']:
+                        lhs1 = [a.get_name for a in fd1.get_lhs]
+                        rhs1 = [a.get_name for a in fd1.get_rhs]
+                        for fd2 in generated_tables[nm2]['fds']:
+                            lhs2 = [a.get_name for a in fd2.get_lhs]
+                            rhs2 = [a.get_name for a in fd2.get_rhs]
+                            if set(lhs1) == set(lhs2) or set(rhs1) == set(rhs2):
+                                skip_fd = True
+                    if not skip_fd:
+                        generated_tables[nm1]['fds'] += generated_tables[nm2]['fds']
                     del generated_tables[old_table.get_name+'_'+str(i + 1)]
                 j += 1
             i += 1
@@ -115,11 +128,13 @@ class Normalizer:
             generated_tables[old_table.get_name+'_'+str(i + 1)] = {'attr': missing_attrs, 'fds': []}
             i += 1
 
+        i = 0
         for t in generated_tables:
-            new_table_obj = Table(t)
+            new_table_obj = Table(old_table.get_name+'_'+str(i + 1))
             new_table_obj.set_fds(generated_tables[t]['fds'])
             new_table_obj.set_attributes(generated_tables[t]['attr'])
             new_tables.append(new_table_obj)
+            i += 1
 
         #check if the candidate keys are not on the fds and add a table for one of them
         cks = self.nf.get_candidate_keys()
@@ -149,7 +164,7 @@ class Normalizer:
             created_tables = []
             for fd in violating_fds:
                 attrs = fd.get_lhs + fd.get_rhs
-                a_names = [a.get_name for a in attrs]
+                #a_names = [a.get_name for a in attrs]
                 new_tables[table.get_name+'_'+str(i+1)] = {'attrs': attrs, 'fds': [fd]}
                 rhs_violating += fd.get_rhs
                 i += 1
@@ -159,11 +174,13 @@ class Normalizer:
                 if a.get_name not in rhs_violating_names:
                     new_table_attr.append(a)
             new_tables[table.get_name+'_'+str(i+1)] = {'attrs': new_table_attr, 'fds': []}
+            i = 0
             for t in new_tables:
-                new_table_obj = Table(t)
+                new_table_obj = Table(table.get_name+'_'+str(i+1))
                 new_table_obj.set_attributes(new_tables[t]['attrs'])
                 new_table_obj.set_fds(new_tables[t]['fds'])
                 created_tables.append(new_table_obj)
+                i += 1
             self.nf3_not_bcnf = True
             return created_tables
 
@@ -205,15 +222,15 @@ class Normalizer:
 
 
 #from dbnormalizer.core.importdata.XMLImport import XMLImport
-#from dbnormalizer.core.normalizer.NF import NF
 
-#test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/slide2_p14.xml', True)
+#test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/lots.xml', True)
 #test.init_objects()
 #schema = test.get_schema()
-#table_test = schema.get_table_by_name('TEST')
+#table_test = schema.get_table_by_name('LOTS')
 #nf = NF(table_test)
 #normalization = Normalizer(nf)
 #normalization.decomposition()
+#print(normalization.get_new_tables_bcnf())
 #print(normalization.get_new_tables())
 
 

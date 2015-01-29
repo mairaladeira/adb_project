@@ -25,11 +25,11 @@ class NF:
 
     # determine the nf of the table. it returns the nf and the FDs breaking the next NF, and is used in the Table class
     def determine_nf(self):
-        nf = 'NF1'
+        nf = '1NF'
         if self.is_nf2():
-            nf = 'NF2'
+            nf = '2NF'
             if self.is_nf3():
-                nf = 'NF3'
+                nf = '3NF'
                 if self.is_bcnf():
                     nf = 'BCNF'
         self.table.nf = nf

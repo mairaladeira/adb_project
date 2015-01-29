@@ -9,6 +9,7 @@ import json
 from dbnormalizer.core.util.funcs import get_attributes_list, get_fds_list
 from dbnormalizer.core.table.FD import FD
 from dbnormalizer.core.normalizer.NF import NF
+from dbnormalizer.core.normalizer.normalizer import Normalizer
 
 app = Flask(__name__)
 schema = []
@@ -153,6 +154,22 @@ def upload(button):
             fds_hold_object = db_structure.check_fds_hold(table.get_fds, table.get_name)
             js_object = get_hold_fds_js_object(fds_hold_object)
             return js_object
+        elif button == "normalizer":
+            table_name = request.form['table']
+            table = schema.get_table_by_name(table_name)
+            nf = NF(table)
+            current_nf = nf.determine_nf()
+            normalization = Normalizer(nf)
+            normalization.decomposition()
+            if normalization.get_nf3_is_not_bcnf():
+                table_nf3 = normalization.get_new_tables_nf3()
+                table_bcnf = normalization.get_new_tables_bcnf()
+                js_object = get_normalized_tables_js_object({'3nf': table_nf3, 'bcnf': table_bcnf})
+            else:
+                table = normalization.get_nf3_is_not_bcnf()
+                js_object = get_normalized_tables_js_object({'3nf': table})
+            print(js_object)
+            return js_object
         return "Undefined button: " + button
     except Exception as e:
         print(str(e))
@@ -196,6 +213,53 @@ def get_display_tables_js_object():
             'fds': fds
         })
     return json.dumps(tables_data)
+
+
+def get_normalized_tables_js_object(tables):
+    tables_data = {}
+    if 'bcnf' in tables:
+        tables_bcnf = tables['bcnf']
+        tables_3nf = tables['3nf']
+        tables_data['bcnf'] = []
+        tables_data['3nf'] = []
+        for table in tables_bcnf:
+            table_structure = create_normalized_table_structure(table)
+            tables_data['bcnf'].append(table_structure)
+        for table in tables_3nf:
+            table_structure = create_normalized_table_structure(table)
+            tables_data['3nf'].append(table_structure)
+    else:
+        tables = tables['3nf']
+        tables_data['3nf'] = []
+        for table in tables:
+            table_structure = create_normalized_table_structure(table)
+            tables_data['3nf'].append(table_structure)
+    return json.dumps(tables_data)
+
+
+def create_normalized_table_structure(table):
+    attributes = get_attributes_list(table.get_attributes)
+    fds = get_fds_list(table.get_fds)
+    f_keys = []
+    for f_key in table.get_foreign_keys():
+        f_k = {'attr': f_key.get_attr(),
+               'referenced_table': f_key.get_referenced_table(),
+               'referenced_attribute': f_key.get_referenced_attribute()}
+        f_keys.append(f_k)
+    t_nf = NF(table)
+    cks = t_nf.get_candidate_keys()
+    candidate_keys = []
+    for ck in cks:
+        ck_a = [a.get_name for a in ck]
+        candidate_keys.append(ck_a)
+    table_data = {
+        'name': table.get_name,
+        'attributes': attributes,
+        'fds': fds,
+        'f_key': f_keys,
+        'candidate_keys': candidate_keys
+    }
+    return table_data
 
 
 def get_attr_list_js(attributes):

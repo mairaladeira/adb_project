@@ -6,6 +6,15 @@ class FKey:
         self.attribute = attr
         self.referenced_table = ref_tab
         self.referenced_attribute = ref_attr
+
+    def get_attr(self):
+        return self.attribute
+
+    def get_referenced_table(self):
+        return self.referenced_table
+
+    def get_referenced_attribute(self):
+        return self.referenced_attribute
     #change the properties to string for easier generation of fk's as well as mem. efficiency
     #the fk doesn't need to be aware of the containing table
 
