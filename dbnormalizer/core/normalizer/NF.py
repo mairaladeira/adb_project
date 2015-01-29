@@ -220,8 +220,9 @@ class NF:
                             lhsn = [l.name for l in lhs]
                             for c in ck_names:
                                 if set(lhsn) < set(c):
-                                    self.violating_fds.append(fd)
-                                    nf_good = False
+                                    if not fd in self.violating_fds:
+                                        self.violating_fds.append(fd)
+                                        nf_good = False
             return nf_good
         except Exception as ex:
             print('violates_2NF exception')
@@ -287,7 +288,7 @@ class NF:
 
 
 # from dbnormalizer.core.importdata.XMLImport import XMLImport
-# test = XMLImport(r'C:\Users\AlexGattino\PycharmProjects\adb_project\examples\test5.xml',True)
+# test = XMLImport(r'C:\Users\Kaiser\Documents\GitHub\adb_project\examples\quiz_mincover.xml',True)
 # test.init_objects()
 # schema = test.get_schema()
 #
