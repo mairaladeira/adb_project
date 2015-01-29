@@ -12,6 +12,14 @@ body {
     color: red;
 }
 
+#dmkm-logo {
+    position: fixed;
+    right: 30px;
+    height: 50px;
+    bottom: 20px;
+    z-index: 2;
+}
+
 #header {
 }
 
@@ -177,7 +185,7 @@ body {
 }
 .sortable-box {
     padding: 10px 5px;
-    border: 1px solid #333333;
+    border: 1px solid #cccccc;
     list-style: none;
     float: left;
     width: 100%;

@@ -42,6 +42,41 @@ function postButton(domIdButton, domIdsInput, callback) {
     });
 }
 
+function insertDataManually(domIdButton, callback) {
+    var data = {
+        Schema:'',
+        tables: []
+    };
+    var table = {
+        name: '',
+        attributes: [],
+        fds: []
+    }
+    var fds = {
+        lhs: '',
+        rhs: ''
+    }
+    var box_content = $('insert-data-manually');
+    $("#"+domIdButton).on("click", function(){
+        var step = $(this).attr('data-id');
+
+        switch (step) {
+            case 'step1':
+                data['schema'] = $('#insertmanual-schema-name').val();
+                box_content.find('.step1').addClass('hidden');
+                box_content.find('step2').removeClass('hidden');
+                $(this).attr('data-id', 'step2');
+                break;
+            case 'step2':
+                break;
+            case 'step3':
+                break;
+        }
+        console.log(data);
+    });
+}
+
+
 function insertFDButton(domIdButton, data, callback){
     $("#" + domIdButton).on("click", function(){
         var table = $("#"+data[0]).html();
@@ -211,6 +246,12 @@ function normalizeTable(domIdButton, callback){
             var table = $("#table-detail-name").attr('data-id');
             $('.nav>li>a').removeClass('selected');
             $.post("/"+domIdButton, {table:table}).done(function(data){
+                if (data == 'false') {
+                    var message = newHTMLElement('h6', {text: 'No normalization needed, the schema is already on BCNF'});
+                    $('#normalization-content').removeClass('hidden').append(message);
+                    $('#getBCNF').addClass('hidden')
+                    return;
+                }
                 data = JSON.parse(data);
                 console.log(data);
                 getNormalizationHTML(data);
@@ -239,6 +280,7 @@ function uploadTextfileButton(domIdButton, domIdInput, callback) {
                 data = JSON.parse(data);
                 displayTables(data);
                 connectionType = 'xml';
+                console.log(data);
             });
         }
     });

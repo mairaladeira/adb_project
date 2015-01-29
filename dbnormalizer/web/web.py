@@ -159,6 +159,8 @@ def upload(button):
             table = schema.get_table_by_name(table_name)
             nf = NF(table)
             current_nf = nf.determine_nf()
+            if current_nf == 'BCNF':
+                return 'false'
             normalization = Normalizer(nf)
             normalization.decomposition()
             if normalization.get_nf3_is_not_bcnf():

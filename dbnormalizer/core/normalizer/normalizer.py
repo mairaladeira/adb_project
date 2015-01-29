@@ -69,6 +69,12 @@ class Normalizer:
         old_table = self.nf.get_table()
         i = 0
 
+        nf_table = NF(old_table)
+        current_nf = nf_table.determine_nf()
+
+        if current_nf == 'BCNF' or current_nf == '3NF':
+            return [old_table]
+
         min_cover = self.nf.get_min_cover()
 
         #Create a new table for each FD after the union operation

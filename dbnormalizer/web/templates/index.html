@@ -17,7 +17,7 @@
 <div>
     <div id="header">
         <!-- Single button -->
-        <div id="logo">DBNormalizer 1.0</div>
+        <div id="logo"><img id="dmkm-logo" title="This is a project of the EM-DMKM Master Program" src="{{ url_for('static', filename='img/dmkm_logo.jpg') }}"/>DBNormalizer 1.0</div>
         <div class="btn-group btn-group-justified" role="group" aria-label="...">
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -143,14 +143,36 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Manually</h4>
+                <h4 class="modal-title">Insert Data Manually</h4>
             </div>
             <div class="modal-body">
-
+                <div class="step1">
+                    <input type="text" class="form-control" id="insertmanual-schema-name" name="insertmanual-schema-name" placeholder="Schema Name" aria-describedby="basic-addon1">
+                </div>
+                <div class="step2 hidden">
+                    <input type="text" class="form-control" id="insertmanual-table-name" name="insertmanual-table-name" placeholder="Table Name" aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" id="insertmanual-attr-name" name="insertmanual-attr-name" placeholder="Attribute Name" aria-describedby="basic-addon1">
+                    <a href="#" id="add-attr">+ New Attribute</a>
+                </div>
+                <div class="step3 hidden">
+                     <div class="elems-list">
+                        <h6>Attributes list</h6>
+                        <ul class="sortable-box" id="insetmanual-attr-box">
+                        </ul>
+                    </div>
+                    <div class="elems-list half">
+                        <h6>Left side</h6>
+                        <ul class="sortable-box fd" id="insetmanual-lhs"></ul>
+                    </div>
+                    <div class="elems-list half">
+                        <h6>Right side</h6>
+                        <ul class="sortable-box fd" id="insetmanua-rhs"></ul>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer clear">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Confirm</button>
+                <button type="button" class="btn btn-primary" data-id="step1" id="insertmanual-button">Next</button>
             </div>
         </div>
     </div>
@@ -202,7 +224,7 @@
                         aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title">Edit fd of table <span id="edit-fd-table-name"></span></h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" id="insert-data-manually">
                 <div class="elems-list">
                     <h6>Attributes list</h6>
                     <ul class="sortable-box" id="attr-box-edit-fd">
@@ -278,6 +300,10 @@
         checkFDs('checkfds', function(result){});
 
         normalizeTable('normalizer', function(result){});
+
+        insertDataManually('insertmanual-button', function(result) {
+
+        })
     });
 
 
