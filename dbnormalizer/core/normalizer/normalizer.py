@@ -226,3 +226,19 @@ class Normalizer:
 
 
 
+#from dbnormalizer.core.importdata.XMLImport import XMLImport
+
+#test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/lots.xml', True)
+#test.init_objects()
+#schema = test.get_schema()
+#table_test = schema.get_table_by_name('THINGS')
+#nf = NF(table_test)
+#normalization = Normalizer(nf)
+#normalization.decomposition()
+#print(normalization.get_new_tables_bcnf())
+#print(normalization.get_new_tables_nf3())
+#print(normalization.get_nf3_is_not_bcnf())
+#print(normalization.get_new_tables())
+
+
+

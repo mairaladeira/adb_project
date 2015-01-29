@@ -166,9 +166,8 @@ def upload(button):
                 table_bcnf = normalization.get_new_tables_bcnf()
                 js_object = get_normalized_tables_js_object({'3nf': table_nf3, 'bcnf': table_bcnf})
             else:
-                table = normalization.get_nf3_is_not_bcnf()
+                table = normalization.get_new_tables_nf3()
                 js_object = get_normalized_tables_js_object({'3nf': table})
-            print(js_object)
             return js_object
         return "Undefined button: " + button
     except Exception as e:
@@ -229,9 +228,9 @@ def get_normalized_tables_js_object(tables):
             table_structure = create_normalized_table_structure(table)
             tables_data['3nf'].append(table_structure)
     else:
-        tables = tables['3nf']
+        tables_3nf = tables['3nf']
         tables_data['3nf'] = []
-        for table in tables:
+        for table in tables_3nf:
             table_structure = create_normalized_table_structure(table)
             tables_data['3nf'].append(table_structure)
     return json.dumps(tables_data)
