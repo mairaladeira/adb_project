@@ -217,21 +217,12 @@ class Normalizer:
                     for ck in table_cknames[d2]:
                         d1_names = [n.name for n in d1.attributes]
                         if set(ck) <= set(d1_names):
-                            d1.f_keys.append(FKey(ck, d2.name, ck))
-
-
-
-#from dbnormalizer.core.importdata.XMLImport import XMLImport
-
-#test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/lots.xml', True)
-#test.init_objects()
-#schema = test.get_schema()
-#table_test = schema.get_table_by_name('LOTS')
-#nf = NF(table_test)
-#normalization = Normalizer(nf)
-#normalization.decomposition()
-#print(normalization.get_new_tables_bcnf())
-#print(normalization.get_new_tables())
+                            newkey = True
+                            for f in d1.f_keys:
+                                if f.referenced_table == d2.name:
+                                    newkey = False
+                            if newkey == True:
+                                d1.f_keys.append(FKey(ck, d2.name, ck))
 
 
 
