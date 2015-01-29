@@ -164,6 +164,7 @@ class NF:
         step2_table.set_fds(fd_2)
         # third step: remove redundant FDs
         fd_3 = []
+        deletions = []
         step3_table = Table(self.table.get_name)
         step3_table.set_attributes(self.table.get_attributes)
         for fd1 in step2_table.get_fds:
@@ -180,12 +181,13 @@ class NF:
             while stopper == 0:
                 left_closure_len_init = len(left_closure)
                 for fd in temp:
-                    fdlhs = [l.name for l in fd.get_lhs]
-                    left_names = [n.name for n in left_closure]
-                    if set(fdlhs) <= set(left_names):
-                        for right_e in fd.get_rhs:
-                            if not ({right_e.name} <= set(left_names)):
-                                left_closure.append(right_e)
+                    if not fd in deletions:
+                        fdlhs = [l.name for l in fd.get_lhs]
+                        left_names = [n.name for n in left_closure]
+                        if set(fdlhs) <= set(left_names):
+                            for right_e in fd.get_rhs:
+                                if not (set(right_e.name) <= set(left_names)):
+                                    left_closure.append(right_e)
                 if left_closure_len_init == len(left_closure):
                     stopper = 1
             left_closure_names = [n.name for n in left_closure]
@@ -195,6 +197,8 @@ class NF:
                     c.append(right_2)
             if len(c) > 0:
                 fd_3.append(FD(a, c))
+            else:
+                deletions.append(fd1)
         step3_table.set_fds(fd_3)
         return fd_3
 
