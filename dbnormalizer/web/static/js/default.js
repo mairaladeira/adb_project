@@ -56,18 +56,24 @@ function insertDataManually(domIdButton, callback) {
         lhs: '',
         rhs: ''
     }
-    var box_content = $('insert-data-manually');
     $("#"+domIdButton).on("click", function(){
+        var box_content = $('#insertManually');
         var step = $(this).attr('data-id');
-
         switch (step) {
             case 'step1':
-                data['schema'] = $('#insertmanual-schema-name').val();
+                data['Schema'] = $('#insertmanual-schema-name').val();
                 box_content.find('.step1').addClass('hidden');
-                box_content.find('step2').removeClass('hidden');
+                box_content.find('.step2').removeClass('hidden');
                 $(this).attr('data-id', 'step2');
                 break;
             case 'step2':
+                table = {
+                    name: $('#insertmanual-table-name').val()
+
+                }
+                var attribute = [$('#insertmanual-attr-name').val()];
+                i = 0;
+
                 break;
             case 'step3':
                 break;
@@ -249,7 +255,7 @@ function normalizeTable(domIdButton, callback){
                 if (data == 'false') {
                     var message = newHTMLElement('h6', {text: 'No normalization needed, the schema is already on BCNF'});
                     $('#normalization-content').removeClass('hidden').append(message);
-                    $('#getBCNF').addClass('hidden')
+                    $('#getBCNF').addClass('hidden');
                     return;
                 }
                 data = JSON.parse(data);
@@ -280,7 +286,7 @@ function uploadTextfileButton(domIdButton, domIdInput, callback) {
                 data = JSON.parse(data);
                 displayTables(data);
                 connectionType = 'xml';
-                console.log(data);
+                //console.log(data);
             });
         }
     });
