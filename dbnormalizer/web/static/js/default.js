@@ -42,43 +42,168 @@ function postButton(domIdButton, domIdsInput, callback) {
     });
 }
 
+function inSchema(table_name, schemaTables) {
+    $.each(schemaTables, function(key, val){
+        if (val['name'] == table_name) return true;
+    });
+    return false;
+}
+
+function inFds(fd, fds) {
+
+    var equal = false;
+    $.each(fds, function(key,val){
+        var equal_lhs = val.lhs.join() == fd.lhs.join();
+        var equal_rhs = val.rhs.join() == fd.rhs.join();
+        if(equal_lhs && equal_rhs) {
+            equal =  true;
+            return false;
+
+        }
+    });
+
+    return equal;
+}
+
 function insertDataManually(domIdButton, callback) {
     var data = {
         Schema:'',
-        tables: []
+        Tables: []
     };
-    var table = {
-        name: '',
-        attributes: [],
-        fds: []
-    }
-    var fds = {
-        lhs: '',
-        rhs: ''
-    }
+    var table = {}
+    var attrs = []
+    var fds = []
     $("#"+domIdButton).on("click", function(){
         var box_content = $('#insertManually');
         var step = $(this).attr('data-id');
         switch (step) {
             case 'step1':
-                data['Schema'] = $('#insertmanual-schema-name').val();
-                box_content.find('.step1').addClass('hidden');
-                box_content.find('.step2').removeClass('hidden');
-                $(this).attr('data-id', 'step2');
+                var schema = $('#insertmanual-schema-name').val();
+                if(schema != '') {
+                    $('#insertmanual-warning').html('');
+                    data['Schema'] = schema;
+                    box_content.find('.step1').addClass('hidden');
+                    box_content.find('.step2').removeClass('hidden');
+                    $(this).attr('data-id', 'step2');
+                } else {
+                    $('#insertmanual-warning').html('Our schema must have a name!');
+                }
                 break;
             case 'step2':
-                table = {
-                    name: $('#insertmanual-table-name').val()
-
+                var table_name = $('#insertmanual-table-name').val();
+                if(table_name != '' && !inSchema(table_name, data['Tables'])) {
+                    $('#insertmanual-warning').html('');
+                    table = {
+                        name: table_name
+                    };
+                    var attr_list = $('#insetmanual-attr-box');
+                    $('.insertmanual-attr-name').each(function(key) {
+                        var val= $(this).val();
+                        if($.inArray(val, attrs) === -1) {
+                            if (val != ''){
+                                attrs.push(val);
+                                var a = newHTMLElement('li', {class: 'attr-elem', 'data-id': 'attr-' + key, text: val});
+                                attr_list.append(a);
+                            }
+                        }
+                        else
+                            $('#insertmanual-warning').html('Some attributes were removed for being repeated!');
+                    });
+                    table['attributes'] = attrs;
+                    fds = [];
+                    $('#added-fds').html('');
+                    box_content.find('.step2').addClass('hidden');
+                    box_content.find('.step3').removeClass('hidden');
+                    $(this).attr('data-id', 'step3');
+                } else {
+                    if (table_name == ''){
+                        $('#insertmanual-warning').html('Our table must have a name!');
+                    } else {
+                        $('#insertmanual-warning').html('Table already on the schema, please change table name!');
+                    }
                 }
-                var attribute = [$('#insertmanual-attr-name').val()];
-                i = 0;
 
                 break;
             case 'step3':
+                if(!table['fds']) {
+                    table['fds'] = fds;
+                    data['Tables'].push(table);
+                };
+                $.post("/"+domIdButton, {data: JSON.stringify(data)}).done(function(schema) {
+                    schema = JSON.parse(schema);
+                    $('.modal').removeClass('in').fadeOut(250);
+                    displayTables(schema);
+                    connectionType = 'manual';
+                });
                 break;
         }
-        console.log(data);
+    });
+    $('#add-attr').on("click", function(){
+        //<input type="text" class="form-control insertmanual-attr-name" name="insertmanual-attr-name" data-id="0" placeholder="Attribute Name" aria-describedby="basic-addon1">
+
+        var new_attr = newHTMLElement('input', {type:'text', class:'form-control insertmanual-attr-name', placeholder:'Attribute Name', 'aria-describedby':'basic-addon1'});
+        $('#attrs-inputs-wrap').append(new_attr);
+    });
+
+    $('#addNewTable').on("click", function(){
+        var box_content = $('#insertManually');
+        table['fds'] = fds;
+        data['Tables'].push(table);
+        table = {};
+        attrs = [];
+        fds = [];
+        $('#insertmanual-warning').html('');
+        $('#insertmanual-table-name').val('');
+        var new_attr = newHTMLElement('input', {type:'text', class:'form-control insertmanual-attr-name', placeholder:'Attribute Name', 'aria-describedby':'basic-addon1'});
+        $('#attrs-inputs-wrap').html(new_attr);
+        box_content.find('.step2').removeClass('hidden');
+        box_content.find('.step3').addClass('hidden');
+        $("#"+domIdButton).attr('data-id', 'step2');
+        $('#added-fds').html('');
+        $('#insetmanual-attr-box').html('');
+    });
+
+    $('#addFd').on("click", function(){
+        var lhs_div = $("#insetmanual-lhs");
+        var rhs_div = $("#insetmanua-rhs");
+        var attr_list = $('#insetmanual-attr-box');
+        var warning = $('#insertmanual-warning');
+        attr_list.html('');
+        $.each(attrs, function(key, attr){
+           var a = newHTMLElement('li', {class:'attr-elem', 'data-id': 'attr-'+key, text:attr});
+           attr_list.append(a);
+        })
+        var lhs = [];
+        lhs_div.find('li').each(function(){
+           lhs.push($(this).html());
+        });
+        var rhs = [];
+        rhs_div.find('li').each( function(){
+           rhs.push($(this).html());
+        });
+        if(lhs.length > 0 && rhs.length > 0){
+            warning.html('');
+            var fd = {lhs: lhs, rhs: rhs};
+            if(!inFds(fd, fds)){
+                fds.push(fd);
+                var fd_html = newHTMLElement('div', {text:fd.lhs.join()+'->'+fd.rhs.join()});
+                $('#added-fds').append(fd_html);
+            }
+            else {
+                warning.html('The repeated fd was not added!');
+            }
+        } else {
+            warning.html('Our fds must have lhs and rhs!');
+        }
+
+        lhs_div.html(' ');
+        rhs_div.html(' ');
+    });
+
+    $(function() {
+        $( "#insetmanual-attr-box, #insetmanual-lhs, #insetmanua-rhs" ).sortable({
+          connectWith: ".sortable-box"
+        }).disableSelection();
     });
 }
 
@@ -286,7 +411,6 @@ function uploadTextfileButton(domIdButton, domIdInput, callback) {
                 data = JSON.parse(data);
                 displayTables(data);
                 connectionType = 'xml';
-                //console.log(data);
             });
         }
     });

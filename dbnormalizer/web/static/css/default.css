@@ -407,3 +407,24 @@ body {
     padding-left: 20px;
 }
 
+#insertManually .elems-list.right {
+    float: right;
+
+}
+
+#insertManually .link{
+    float: right;
+    clear: both;
+    padding: 15px 0;
+}
+
+#insertManually .add-fds-title, #insertManually #added-fds {
+    float: left;
+    clear: both;
+}
+
+#insertManually #added-fds {
+    border: 1px solid #cccccc;
+    padding: 10px;
+    width: 100%;
+}

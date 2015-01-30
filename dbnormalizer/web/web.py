@@ -10,7 +10,7 @@ from dbnormalizer.core.util.funcs import get_attributes_list, get_fds_list
 from dbnormalizer.core.table.FD import FD
 from dbnormalizer.core.normalizer.NF import NF
 from dbnormalizer.core.normalizer.normalizer import Normalizer
-
+from dbnormalizer.core.importdata.manualImport import ManualImport
 app = Flask(__name__)
 schema = []
 db_structure = None
@@ -74,6 +74,13 @@ def upload(button):
             else:
                 error = db_structure.get_error()
                 return error
+        elif button == "insertmanual":
+            data = request.form.get('data')
+            schema_data = json.loads(data)
+            mi = ManualImport(schema_data)
+            schema = mi.get_schema()
+            js_object = get_display_tables_js_object()
+            return js_object
         elif button == "requestFD" or button == "attributeClosure":
             table_name = request.form['table']
             attrs = schema.get_table_attributes(table_name)

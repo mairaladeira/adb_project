@@ -146,13 +146,17 @@
                 <h4 class="modal-title">Insert Data Manually</h4>
             </div>
             <div class="modal-body">
+                <div id="insertmanual-warning" class="error-message"></div>
                 <div class="step1">
                     <input type="text" class="form-control" id="insertmanual-schema-name" name="insertmanual-schema-name" placeholder="Schema Name" aria-describedby="basic-addon1">
                 </div>
                 <div class="step2 hidden">
                     <input type="text" class="form-control" id="insertmanual-table-name" name="insertmanual-table-name" placeholder="Table Name" aria-describedby="basic-addon1">
-                    <input type="text" class="form-control" id="insertmanual-attr-name" name="insertmanual-attr-name" placeholder="Attribute Name" aria-describedby="basic-addon1">
-                    <a href="#" id="add-attr">+ New Attribute</a>
+                    <div id="attrs-inputs-wrap">
+                        <input type="text" class="form-control insertmanual-attr-name" name="insertmanual-attr-name" data-id="0" placeholder="Attribute Name" aria-describedby="basic-addon1">
+                        <input type="text" class="form-control insertmanual-attr-name" name="insertmanual-attr-name" data-id="1" placeholder="Attribute Name" aria-describedby="basic-addon1">
+                    </div>
+                    <a href="#" id="add-attr" class="link">+ New Attribute</a>
                 </div>
                 <div class="step3 hidden">
                      <div class="elems-list">
@@ -164,15 +168,22 @@
                         <h6>Left side</h6>
                         <ul class="sortable-box fd" id="insetmanual-lhs"></ul>
                     </div>
-                    <div class="elems-list half">
+                    <div class="elems-list half right">
                         <h6>Right side</h6>
                         <ul class="sortable-box fd" id="insetmanua-rhs"></ul>
                     </div>
+                    <a href="#" id="addFd" class="link">Add FD</a>
+
+                    <h6 class="add-fds-title">Added Fds:</h6>
+                    <div id="added-fds">
+
+                    </div>
+                    <a href="#" id="addNewTable" class="link">Add New Table</a>
                 </div>
             </div>
             <div class="modal-footer clear">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-id="step1" id="insertmanual-button">Next</button>
+                <button type="button" class="btn btn-primary" data-id="step1" id="insertmanual">Next</button>
             </div>
         </div>
     </div>
@@ -301,7 +312,7 @@
 
         normalizeTable('normalizer', function(result){});
 
-        insertDataManually('insertmanual-button', function(result) {
+        insertDataManually('insertmanual', function(result) {
 
         })
     });
