@@ -452,3 +452,9 @@ body {
     padding: 10px;
     width: 100%;
 }
+
+#getSQL {
+    float: right;
+    margin-right: 10px;
+    margin-top: 20px;
+}

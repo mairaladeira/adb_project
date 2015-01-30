@@ -14,7 +14,7 @@ from dbnormalizer.core.importdata.manualImport import ManualImport
 app = Flask(__name__)
 schema = []
 db_structure = None
-
+#normalized_schemas = {}
 
 def open_browser():
     """
@@ -50,6 +50,7 @@ def upload(button):
     """
     global schema
     global db_structure
+    #global normalized_schemas
     print(button)
     try:
         if button == "xmlButton":
@@ -178,6 +179,9 @@ def upload(button):
                 table = normalization.get_new_tables_nf3()
                 js_object = get_normalized_tables_js_object({'3nf': table})
             return js_object
+        elif button == 'downloadSQL':
+            #print(normalized_schemas)
+            return 'hi'
         return "Undefined button: " + button
     except Exception as e:
         print(str(e))

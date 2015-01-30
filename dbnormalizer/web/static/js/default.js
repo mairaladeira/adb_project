@@ -769,10 +769,18 @@ function getNormalizationHTML(data){
         tables.html('');
         var warning = newHTMLElement('h6', {class:'error-message clear', text:'It is important to remember that some FDs are dropped with the BCNF decomposition for this table!'});
         $('#bcnfWarning').append(warning);
-        $('#normalization-nf').html("BCNF");
+        title = 'BCNF';
+        $('#normalization-nf').html(title);
         $.each(data['bcnf'], function(key, val){
             var table = getNormalizedTableHTML(val);
             tables.append(table);
+        });
+    });
+
+    $('#getSQL').on('click', function(){
+        var table = $('#table-detail-name').attr('data-id');
+        $.post("/downloadSQL", {table: table}).done(function(data){
+            console.log(data);
         });
     });
 }
