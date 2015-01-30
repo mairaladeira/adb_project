@@ -9,6 +9,7 @@ __author__ = 'Iva'
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine import reflection
 from dbnormalizer.core.table.FKey import FKey
+from dbnormalizer.core.importdata.FDDetection import FDDetection
 
 
 class DBImport:
@@ -24,6 +25,7 @@ class DBImport:
         self.metadata = None
         self.inspector = None
         self.error = None
+        self.fds_data = None
         try:
             self.engine = create_engine('postgresql://' + username + ':' + password + '@'+url+'/' + database)
             self.connection = self.engine.connect()
@@ -60,6 +62,11 @@ class DBImport:
                 new_table.fds = fds
             for fk in foreign_import:
                 new_table.imported_fk.append(FKey(fk['constrained_columns'], fk['referred_table'], fk['referred_columns']))
+            self.connection = self.engine.connect()
+            result = self.connection.execute("select count(*) as count from " + self.schema + "." + new_table.name)
+            for row in result:
+                new_table.db_row_count = row['count']
+            self.fds_data = FDDetection(self.engine, self.schema, new_table)
             mapped.add_table(new_table)
         return mapped
 
@@ -155,16 +162,19 @@ class DBImport:
 
 
 
-# proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='adb_test', dbschema='test')
+#proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='birdie', dbschema='public')
 # proba.print_table_info()
-# maped = proba.map_tables()
+#maped = proba.map_tables()
+#diction = proba.fds_data.setup_table()
+# for part in diction:
+#     print(part)
 # lhs =[]
 # lhs.append(Attribute('c'))
 # rhs =[]
 # rhs.append(Attribute('d'))
 # notfd = FD(lhs, rhs)
 # for t in maped.get_tables():
-#     print(t.imported_fk)
+#     print(t.db_row_count)
 #     if t.name == 'testing':
 #         print(t.pk)
 #         t.determine_nf()

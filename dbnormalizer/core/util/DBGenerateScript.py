@@ -15,7 +15,7 @@ class DBGenerateScript:
         self.script = ''
         self.sql_list = []
         def dump(sql, *multiparams, **params):
-            return self.sql_list.append(str(sql.compile(dialect=self.engine.dialect))+';\n')
+            return self.sql_list.append(str(sql.compile(dialect=self.engine.dialect)).strip()+';\n')
         self.engine = create_engine('postgresql://' + username + ':' + password + '@'+url+'/' + database, strategy='mock',executor=dump)
                                     #executor= lambda sql, *multiparams, **params: print(sql, ";"))
         self.metadata_new = MetaData(schema=self.normalized_schema.name)
@@ -111,7 +111,7 @@ class DBGenerateScript:
 #         ['node.node_id'],
 #         use_alter=True,
 #         name='fk_element_parent_node_id'))
-# engine = create_engine('postgresql://adb:adb@doesntmatter/base', strategy='mock', executor= lambda sql, *multiparams, **params: print (sql, ";"))
+# # engine = create_engine('postgresql://adb:adb@doesntmatter/base', strategy='mock', executor= lambda sql, *multiparams, **params: print (sql, ";"))
 # from dbnormalizer.core.importdata.DBImport import DBImport
 # proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='adb_test', dbschema='test')
 # maped = proba.map_tables()
@@ -120,7 +120,7 @@ class DBGenerateScript:
 # username=password= 'postgres'
 # url = 'localhost:5432'
 # database = 'adb_test'
-# gen = DBGenerateScript(maped, maped, username, password, url, database)
+# gen = DBGenerateScript(maped_old, maped_new, username, password, url, database)
 # script = gen.generate_script()
 # print(script)
 # for q in gen.sql_list:

@@ -15,6 +15,7 @@ class Table:
         self.exported_fk = []
         #to add when generating a normalization proposal
         self.f_keys = []
+        self.db_row_count = 0
         self.nf = 'not defined'
 
     def set_attributes(self, attributes):
@@ -61,3 +62,9 @@ class Table:
 
     def get_foreign_keys(self):
         return self.f_keys
+
+    def get_attribute_string_list(self):
+        list = []
+        for att in self.attributes:
+            list.append(att.name)
+        return list
