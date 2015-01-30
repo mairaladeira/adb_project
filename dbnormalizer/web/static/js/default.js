@@ -746,6 +746,7 @@ function get_checkFDs_HTML(checked_fds, table) {
 
 function getNormalizationHTML(data){
     var bcnf_button = $('#getBCNF');
+    var sql_download_button = $('#getSQL');
     $('#action-content').html('');
     $('#normalization-content').removeClass('hidden');
     var title = 'BCNF';
@@ -753,11 +754,13 @@ function getNormalizationHTML(data){
 
     if(data['bcnf']){
         title = '3NF';
-        bcnf_button.removeClass('hidden')
+        bcnf_button.removeClass('hidden');
+        sql_download_button.removeClass('hidden');
     } else {
-        bcnf_button.addClass('hidden')
+        bcnf_button.addClass('hidden');
+        sql_download_button.addClass('hidden');
     }
-    $('#normalization-tables').find('ul.tables').html('')
+    $('#normalization-tables').find('ul.tables').html('');
     $('#normalization-nf').html(title);
     $.each(data['3nf'], function(key, val){
         var table = getNormalizedTableHTML(val);
@@ -777,9 +780,9 @@ function getNormalizationHTML(data){
         });
     });
 
-    $('#getSQL').on('click', function(){
+    sql_download_button.on('click', function(){
         var table = $('#table-detail-name').attr('data-id');
-        $.post("/downloadSQL", {table: table}).done(function(data){
+        $.post("/downloadSQL", {table: table, type: title}).done(function(data){
             console.log(data);
         });
     });

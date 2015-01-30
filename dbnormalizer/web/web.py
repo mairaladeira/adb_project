@@ -11,10 +11,15 @@ from dbnormalizer.core.table.FD import FD
 from dbnormalizer.core.normalizer.NF import NF
 from dbnormalizer.core.normalizer.normalizer import Normalizer
 from dbnormalizer.core.importdata.manualImport import ManualImport
+from dbnormalizer.core.table.schema import Schema
+from dbnormalizer.core.util.DBGenerateScript import DBGenerateScript
+
+
 app = Flask(__name__)
 schema = []
 db_structure = None
-#normalized_schemas = {}
+normalized_schemas = {}
+db_connection = {}
 
 def open_browser():
     """
@@ -50,7 +55,8 @@ def upload(button):
     """
     global schema
     global db_structure
-    #global normalized_schemas
+    global normalized_schemas
+    global db_connection
     print(button)
     try:
         if button == "xmlButton":
@@ -67,6 +73,12 @@ def upload(button):
             pwd = request.form.get('pwd')
             db_name = request.form.get('dbName')
             schema_name = request.form.get('schema')
+            db_connection = {
+                'url': url,
+                'username': username,
+                'pwd': pwd,
+                'db':db_name
+            }
             db_structure = DBImport(url, username, pwd, schema_name, db_name)
             if None == db_structure.get_error():
                 schema = db_structure.map_tables()
@@ -174,13 +186,27 @@ def upload(button):
             if normalization.get_nf3_is_not_bcnf():
                 table_nf3 = normalization.get_new_tables_nf3()
                 table_bcnf = normalization.get_new_tables_bcnf()
+                normalized_schemas[table_name] = normalization
                 js_object = get_normalized_tables_js_object({'3nf': table_nf3, 'bcnf': table_bcnf})
             else:
                 table = normalization.get_new_tables_nf3()
+                normalized_schemas[table_name] = normalization
                 js_object = get_normalized_tables_js_object({'3nf': table})
             return js_object
         elif button == 'downloadSQL':
-            #print(normalized_schemas)
+            decomposition_type = request.form['type']
+            table_name = request.form['table']
+            if decomposition_type == '3NF' or decomposition_type == '3nf':
+                new_schema = normalized_schemas[table_name].get_nf3_schema()
+            elif decomposition_type == 'BCNF' or decomposition_type == 'bcnf':
+                new_schema = normalized_schemas[table_name].get_bcnf_schema()
+
+            old_schema = Schema('old_schema')
+            table_obj = schema.get_table_by_name(table_name)
+            old_schema.add_table(table_obj)
+            gen = DBGenerateScript(old_schema, new_schema, db_connection['username'], db_connection['pwd'], db_connection['url'], db_connection['db'])
+            script = gen.generate_script()
+            print(script)
             return 'hi'
         return "Undefined button: " + button
     except Exception as e:

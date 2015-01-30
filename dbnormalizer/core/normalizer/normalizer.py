@@ -1,4 +1,5 @@
 __author__ = 'Mehreeen'
+from dbnormalizer.core.table.schema import Schema
 from dbnormalizer.core.table.FD import FD
 from dbnormalizer.core.table.Table import Table
 from dbnormalizer.core.normalizer.NF import NF
@@ -21,6 +22,19 @@ class Normalizer:
 
     def get_nf3_is_not_bcnf(self):
         return self.nf3_not_bcnf
+
+    def get_bcnf_schema(self):
+        new_schema = Schema('new_'+self.nf.table.get_name+'_bcnf')
+        for t in self.get_new_tables_bcnf():
+            new_schema.add_table(t)
+        return new_schema
+
+    def get_nf3_schema(self):
+        new_schema = Schema('new_'+self.nf.table.get_name)
+        for t in self.get_new_tables_nf3():
+            new_schema.add_table(t)
+        return new_schema
+
 
     """
     Union of fds
