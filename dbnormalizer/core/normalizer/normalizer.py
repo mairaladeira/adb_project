@@ -5,6 +5,7 @@ from dbnormalizer.core.table.Table import Table
 from dbnormalizer.core.normalizer.NF import NF
 from dbnormalizer.core.table.FKey import FKey
 
+
 class Normalizer:
     def __init__(self, normal_form):
         self.nf = normal_form
@@ -57,10 +58,20 @@ class Normalizer:
                 lhs_2_name = [l.get_name for l in fd_2.get_lhs]
                 if j >= i:
                     if lhs_1_name == lhs_2_name and j > i:
-                        lhs_fds.remove(lhs_1_name)
-                        united_fds.remove(fd_1)
+                        if lhs_1_name in lhs_fds:
+                            lhs_fds.remove(lhs_1_name)
+                        if fd_1 in united_fds:
+                            united_fds.remove(fd_1)
+                            rhs = fd_1.get_rhs + fd_2.get_rhs
+                        else:
+                            for f in united_fds:
+                                if set([a.get_name for a in f.get_lhs]) == set(lhs_1_name):
+                                    united_fds.remove(f)
+                                    rhs = f.get_rhs
+                                    for r in fd_2.get_rhs:
+                                        if r.get_name not in [a.get_name for a in rhs]:
+                                            rhs.append(r)
                         lhs_fds.append(lhs_1_name)
-                        rhs = fd_1.get_rhs + fd_2.get_rhs
                         new_fd = FD(fd_1.get_lhs, rhs)
                         united_fds.append(new_fd)
                     else:
@@ -113,7 +124,6 @@ class Normalizer:
                 checked_attributes.add(a.get_name)
             i += 1
         i = 0
-
         #check if any of the fds is contained on the set of attributes of fds
         #example: B->D, D->E and BD->E: Table BDE should eliminate the BD and DE tables
         for t_1 in generated_tables_aux:
@@ -174,6 +184,7 @@ class Normalizer:
         return new_tables
 
     def decomposition_bcnf(self, table):
+        old_min_cover = self.nf.calculate_mincover()
         nf_table = NF(table)
         current_nf = nf_table.determine_nf()
         if current_nf != 'BCNF':
@@ -184,8 +195,14 @@ class Normalizer:
             created_tables = []
             for fd in violating_fds:
                 attrs = fd.get_lhs + fd.get_rhs
-                #a_names = [a.get_name for a in attrs]
-                new_tables[table.get_name+'_'+str(i+1)] = {'attrs': attrs, 'fds': [fd]}
+                a_names = [a.get_name for a in attrs]
+                n_fds = [fd]
+                for f_mc in old_min_cover:
+                    fmc_lhs_n = [a.get_name for a in f_mc.lhs]
+                    fmc_rhs_n = [a.get_name for a in f_mc.rhs]
+                    if set(fmc_lhs_n) < set(a_names) and set(fmc_rhs_n) in set(a_names):
+                        n_fds.append(f_mc)
+                new_tables[table.get_name+'_'+str(i+1)] = {'attrs': attrs, 'fds': n_fds}
                 rhs_violating += fd.get_rhs
                 i += 1
             rhs_violating_names = [a.get_name for a in rhs_violating]
@@ -193,7 +210,14 @@ class Normalizer:
             for a in table.get_attributes:
                 if a.get_name not in rhs_violating_names:
                     new_table_attr.append(a)
-            new_tables[table.get_name+'_'+str(i+1)] = {'attrs': new_table_attr, 'fds': []}
+            new_tables_attr_n = [a.get_name for a in new_table_attr]
+            new_table_fds = []
+            for f_mc in old_min_cover:
+                fmc_lhs_n = [a.get_name for a in f_mc.lhs]
+                fmc_rhs_n = [a.get_name for a in f_mc.rhs]
+                if set(fmc_lhs_n) < set(new_tables_attr_n) and set(fmc_rhs_n) in set(new_tables_attr_n):
+                    new_table_fds.append(f_mc)
+            new_tables[table.get_name+'_'+str(i+1)] = {'attrs': new_table_attr, 'fds': new_table_fds}
             i = 0
             for t in new_tables:
                 new_table_obj = Table(table.get_name+'_'+str(i+1))
@@ -248,10 +272,10 @@ class Normalizer:
 
 #from dbnormalizer.core.importdata.XMLImport import XMLImport
 
-#test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/lots.xml', True)
+#test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/test_6.xml', True)
 #test.init_objects()
 #schema = test.get_schema()
-#table_test = schema.get_table_by_name('THINGS')
+#table_test = schema.get_table_by_name('TEST')
 #nf = NF(table_test)
 #normalization = Normalizer(nf)
 #normalization.decomposition()

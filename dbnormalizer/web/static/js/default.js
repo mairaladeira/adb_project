@@ -770,8 +770,8 @@ function getNormalizationHTML(data){
     bcnf_button.on('click', function(){
         var tables = $('#normalization-tables').find('ul.tables');
         tables.html('');
-        var warning = newHTMLElement('h6', {class:'error-message clear', text:'It is important to remember that some FDs are dropped with the BCNF decomposition for this table!'});
-        $('#bcnfWarning').append(warning);
+        var warning = newHTMLElement('h6', {class:'error-message clear', text:'It is important to remember that some FDs are dropped with the BCNF decomposition of this table!'});
+        $('#bcnfWarning').html('').append(warning);
         title = 'BCNF';
         $('#normalization-nf').html(title);
         $.each(data['bcnf'], function(key, val){

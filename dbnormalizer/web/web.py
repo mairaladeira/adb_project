@@ -17,7 +17,7 @@ from dbnormalizer.core.util.DBGenerateScript import DBGenerateScript
 
 app = Flask(__name__)
 schema = []
-db_structure = None
+db_c = None
 normalized_schemas = {}
 db_connection = {}
 
@@ -56,7 +56,7 @@ def upload(button):
     global schema
     global db_structure
     global normalized_schemas
-    global db_connection
+    global db_c
     print(button)
     try:
         if button == "xmlButton":
@@ -73,7 +73,7 @@ def upload(button):
             pwd = request.form.get('pwd')
             db_name = request.form.get('dbName')
             schema_name = request.form.get('schema')
-            db_connection = {
+            db_c = {
                 'url': url,
                 'username': username,
                 'pwd': pwd,
@@ -196,6 +196,7 @@ def upload(button):
         elif button == 'downloadSQL':
             decomposition_type = request.form['type']
             table_name = request.form['table']
+            new_schema = {}
             if decomposition_type == '3NF' or decomposition_type == '3nf':
                 new_schema = normalized_schemas[table_name].get_nf3_schema()
             elif decomposition_type == 'BCNF' or decomposition_type == 'bcnf':
@@ -204,13 +205,13 @@ def upload(button):
             old_schema = Schema('old_schema')
             table_obj = schema.get_table_by_name(table_name)
             old_schema.add_table(table_obj)
-            gen = DBGenerateScript(old_schema, new_schema, db_connection['username'], db_connection['pwd'], db_connection['url'], db_connection['db'])
+            gen = DBGenerateScript(old_schema, new_schema, db_c['username'], db_c['pwd'], db_c['url'], db_c['db'])
             script = gen.generate_script()
             print(script)
             return 'hi'
         return "Undefined button: " + button
     except Exception as e:
-        print(str(e))
+        print(e)
 
 
 def get_hold_fds_js_object(fds_hold_object):
