@@ -66,7 +66,7 @@ class DBImport:
             result = self.connection.execute("select count(*) as count from " + self.schema + "." + new_table.name)
             for row in result:
                 new_table.db_row_count = row['count']
-            self.fds_data = FDDetection(self.engine, self.schema, new_table)
+            #self.fds_data = FDDetection(self.engine, self.schema, new_table)
             mapped.add_table(new_table)
         return mapped
 
@@ -163,11 +163,12 @@ class DBImport:
 
 
 #proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='birdie', dbschema='public')
-# proba.print_table_info()
+# # proba.print_table_info()
 #maped = proba.map_tables()
-#diction = proba.fds_data.setup_table()
+# diction = proba.fds_data.setup_table()
 # for part in diction:
-#     print(part)
+#      print(part.no_of_sets)
+#      print(part.no_of_elem)
 # lhs =[]
 # lhs.append(Attribute('c'))
 # rhs =[]

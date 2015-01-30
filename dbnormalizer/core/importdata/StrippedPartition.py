@@ -8,6 +8,7 @@ class StrippedPartition:
         self.no_of_elem = 0
         self.result_set = result_set
         self.dict_part = {}
+        self.column = column
 
         id_row = 1
         for data in result_set:
