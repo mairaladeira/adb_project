@@ -378,10 +378,12 @@ function normalizeTable(domIdButton, callback){
             $('.nav>li>a').removeClass('selected');
             $.post("/"+domIdButton, {table:table}).done(function(data){
                 if (data == 'false') {
-                    var message = newHTMLElement('h6', {text: 'No normalization needed, the schema is already on BCNF'});
+                    var message = newHTMLElement('h6', {text: 'No normalization needed, the schema is already on BCNF', id:"no-normalization"});
                     $('#normalization-content').removeClass('hidden').append(message);
                     $('#getBCNF').addClass('hidden');
                     return;
+                } else {
+                    $('#no-normalization').remove();
                 }
                 data = JSON.parse(data);
                 console.log(data);
@@ -743,20 +745,35 @@ function get_checkFDs_HTML(checked_fds, table) {
 }
 
 function getNormalizationHTML(data){
+    var bcnf_button = $('#getBCNF');
     $('#action-content').html('');
     $('#normalization-content').removeClass('hidden');
     var title = 'BCNF';
+    $('#bcnfWarning').html('');
+
     if(data['bcnf']){
         title = '3NF';
-        $('#getBCNF').removeClass('hidden')
+        bcnf_button.removeClass('hidden')
     } else {
-        $('#getBCNF').addClass('hidden')
+        bcnf_button.addClass('hidden')
     }
     $('#normalization-tables').find('ul.tables').html('')
-    $('#normalizaton-nf').html(title);
+    $('#normalization-nf').html(title);
     $.each(data['3nf'], function(key, val){
         var table = getNormalizedTableHTML(val);
         $('#normalization-tables').find('ul.tables').append(table);
+    });
+
+    bcnf_button.on('click', function(){
+        var tables = $('#normalization-tables').find('ul.tables');
+        tables.html('');
+        var warning = newHTMLElement('h6', {class:'error-message clear', text:'It is important to remember that some FDs are dropped with the BCNF decomposition for this table!'});
+        $('#bcnfWarning').append(warning);
+        $('#normalization-nf').html("BCNF");
+        $.each(data['bcnf'], function(key, val){
+            var table = getNormalizedTableHTML(val);
+            tables.append(table);
+        });
     });
 }
 
@@ -817,9 +834,15 @@ function getNormalizedTableFKHTML(f_keys) {
     var fkWrap = newHTMLElement('div', {class:'normalized-table-fk'});
     if(f_keys.length > 0) {
         var title = newHTMLElement('h6', {text:'Foreign keys:'});
-        var fk_list = newHTMLElement('ul', {class:'normalized-table-fk-list'});
+        var fk_list = newHTMLElement('table', {class:'normalized-table-fk-list'});
+        var fk_titles = newHTMLElement('tr', {class:'fk-elem title'});
+        var fk_titles_attr = newHTMLElement('td', {class:'fk-attr', text: 'Attribute'});
+        var fk_titles_referenced_table = newHTMLElement('td', {class:'fk-rt', text:'Referenced Table'});
+        var fk_titles_referenced_attr = newHTMLElement('td', {class:'fk-rattr', text:'Referenced Attribute'});
+        fk_titles = appendChildes(fk_titles, [fk_titles_attr,fk_titles_referenced_table,fk_titles_referenced_attr]);
+        fk_list.appendChild(fk_titles);
         $.each(f_keys, function(key, val){
-            var fk_elem = newHTMLElement('li', {class:'fk-elem'});
+            var fk_elem = newHTMLElement('tr', {class:'fk-elem'});
             var attr_text = '';
             $.each(val['attr'], function(k, v){
                 if (k == 0)
@@ -827,8 +850,8 @@ function getNormalizedTableFKHTML(f_keys) {
                 else
                     attr_text += ', '+v;
             });
-            var attr = newHTMLElement('div', {class:'fk-attr', text: attr_text});
-            var referenced_table = newHTMLElement('div', {class:'fk-rt', text:val['referenced_table']});
+            var attr = newHTMLElement('td', {class:'fk-attr', text: attr_text});
+            var referenced_table = newHTMLElement('td', {class:'fk-rt', text:val['referenced_table']});
             var referenced_attr_text = '';
             $.each(val['referenced_attribute'], function(k, v){
                 if (k == 0)
@@ -836,7 +859,7 @@ function getNormalizedTableFKHTML(f_keys) {
                 else
                     referenced_attr_text += ', '+v;
             });
-            var referenced_attr = newHTMLElement('div', {class:'fk-rattr', text: referenced_attr_text});
+            var referenced_attr = newHTMLElement('td', {class:'fk-rattr', text: referenced_attr_text});
             fk_elem = appendChildes(fk_elem, [attr, referenced_table, referenced_attr]);
             fk_list.appendChild(fk_elem);
         });

@@ -13,10 +13,10 @@ body {
 }
 
 #dmkm-logo {
-    position: fixed;
-    right: 30px;
+    position: absolute;
+    left: 1px;
     height: 50px;
-    bottom: 20px;
+    top: 0;
     z-index: 2;
 }
 
@@ -343,16 +343,29 @@ body {
 #normalization-content {
     padding: 0 15px 50px;
     float: left;
+    width: 100%;
 }
 
 #normalization-tables .tables{
     list-style: none;
+    padding-left: 0;
+}
+
+.normalized-table-ck-list {
+    list-style: none;
+    padding-left: 0;
+}
+.normalized-table-ck-list li:before {
+    content:'-';
+    padding-right: 10px;
+}
+
+.normalized-table-attributes {
     padding-left: 15px;
 }
 
 .normalized-table-fds {
     float: left;
-    padding-left: 20px;
 }
 
 .normalized-table-fds-list {
@@ -369,15 +382,25 @@ body {
     padding-left: 10px;
 }
 
-.normalized-table-ck, .normalized-table-fk, .normalized-table-ck .key-elem, .normalized-table-fk .fk-elem  {
+.normalized-table-ck, .normalized-table-fk, .normalized-table-ck .key-elem {
     float: left;
     clear: both;
 }
+ .normalized-table-fk .fk-elem  {
+     clear: both;
+ }
+
+ .normalized-table-fk .fk-elem.title {
+     background-color: #eeeeee;
+     font-weight: 500;
+ }
 
 .normalized-table {
     float: left;
     clear: both;
-    padding-bottom: 30px;
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: 10px 10px 50px;
 }
 
 #getBCNF {
@@ -388,7 +411,6 @@ body {
 
 
 .fk-attr, .fk-rt, .fk-rattr {
-    float: left;
     border-right: 1px solid #ccc;
     padding: 5px 10px;
 }
@@ -404,13 +426,15 @@ body {
 .normalized-table-fk-list {
     float: left;
     list-style: none;
-    padding-left: 20px;
+    padding-left: 0;
 }
 
 #insertManually .elems-list.right {
     float: right;
 
 }
+
+
 
 #insertManually .link{
     float: right;
