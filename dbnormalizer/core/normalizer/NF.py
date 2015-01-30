@@ -164,6 +164,7 @@ class NF:
         step2_table.set_fds(fd_2)
         # third step: remove redundant FDs
         fd_3 = []
+        deletions = []
         step3_table = Table(self.table.get_name)
         step3_table.set_attributes(self.table.get_attributes)
         for fd1 in step2_table.get_fds:
@@ -180,21 +181,24 @@ class NF:
             while stopper == 0:
                 left_closure_len_init = len(left_closure)
                 for fd in temp:
-                    fdlhs = [l.name for l in fd.get_lhs]
-                    left_names = [n.name for n in left_closure]
-                    if set(fdlhs) <= set(left_names):
-                        for right_e in fd.get_rhs:
-                            if not ({right_e.name} <= set(left_names)):
-                                left_closure.append(right_e)
+                    if not fd in deletions:
+                        fdlhs = [l.name for l in fd.get_lhs]
+                        left_names = [n.name for n in left_closure]
+                        if set(fdlhs) <= set(left_names):
+                            for right_e in fd.get_rhs:
+                                if not right_e.name in left_names:
+                                    left_closure.append(right_e)
                 if left_closure_len_init == len(left_closure):
                     stopper = 1
             left_closure_names = [n.name for n in left_closure]
             c = []
             for right_2 in b:
-                if not ({right_2.name} <= set(left_closure_names)):
+                if not right_2.name in left_closure_names:
                     c.append(right_2)
             if len(c) > 0:
                 fd_3.append(FD(a, c))
+            else:
+                deletions.append(fd1)
         step3_table.set_fds(fd_3)
         return fd_3
 
@@ -287,19 +291,6 @@ class NF:
         return nf_good
 
 
-
-# from dbnormalizer.core.importdata.XMLImport import XMLImport
-# test = XMLImport(r'C:\Users\Kaiser\Documents\GitHub\adb_project\examples\quiz_mincover.xml',True)
-# test.init_objects()
-# schema = test.get_schema()
-#
-# for table in schema.get_tables():
-#     print(table.get_name)
-#     nf = NF(table)
-#     nf.determine_nf()
-#     if table.nf != 'BCNF':
-#         print(nf.violating_fds)
-#     print(table.nf)
 
 
 
