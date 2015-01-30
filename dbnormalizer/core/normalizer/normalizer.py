@@ -229,7 +229,10 @@ class Normalizer:
             return created_tables
 
         else:
-            return [table]
+            new_table = Table(table.get_name)
+            new_table.set_attributes(table.get_attributes)
+            new_table.set_fds(table.get_fds)
+            return [new_table]
 
     def decomposition(self):
         tables_nf3 = self.decomposition_3nf()
