@@ -9,10 +9,15 @@ class StrippedPartition:
         self.result_set = result_set
         self.dict_part = {}
         self.column = column
+        self.no_equivalence_classes = 0
 
         id_row = 1
         for data in result_set:
-            row = str(data[column])
+            #if not isinstance(column, list):
+            if len(column) == 1:
+                row = str(data[column])
+            else:
+                row = str(data._row)
             #row =1
             if row is None:
                 row = "NULL"
@@ -26,14 +31,13 @@ class StrippedPartition:
                 value_list.append(id_row)
                 self.dict_part[row] = value_list
             id_row += 1
+        self.no_equivalence_classes = len(self.dict_part)
         for val_l in self.dict_part.values():
             if len(val_l) > 1:
                 self.elements = val_l
                 self.no_of_elem += len(val_l)
                 self.no_of_sets += 1
-        self.error = self.no_of_elem - self.no_of_sets
+        #self.error = self.no_of_elem - self.no_of_sets
         #empty dictionary for memory
-        self.dict_part = {}
-
-
+        #self.dict_part = {}
 

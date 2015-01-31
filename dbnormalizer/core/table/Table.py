@@ -68,3 +68,13 @@ class Table:
         for att in self.attributes:
             list.append(att.name)
         return list
+
+    def get_attribute_string_list_combined(self):
+        list = []
+        from itertools import combinations
+        L = self.get_attribute_string_list()
+        for x in range(1, len(L)):
+            l = [",".join(map(str, comb)) for comb in combinations(L, x)]
+            for el in l:
+                list.append(el)
+        return list

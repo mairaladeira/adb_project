@@ -66,7 +66,7 @@ class DBImport:
             result = self.connection.execute("select count(*) as count from " + self.schema + "." + new_table.name)
             for row in result:
                 new_table.db_row_count = row['count']
-            #self.fds_data = FDDetection(self.engine, self.schema, new_table)
+            self.fds_data = FDDetection(self.engine, self.schema, new_table)
             mapped.add_table(new_table)
         return mapped
 
@@ -160,30 +160,12 @@ class DBImport:
             print('Error with query, check if fd is good: ' + str(e))
             self.error = str(e.args[0])
 
-
-
-#proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='birdie', dbschema='public')
-# # proba.print_table_info()
-#maped = proba.map_tables()
+# from dbnormalizer.core.importdata.StrippedPartition import StrippedPartition
+# proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='tane', dbschema='public')
+# conn = proba.engine.connect()
+# maped = proba.map_tables()
 # diction = proba.fds_data.setup_table()
 # for part in diction:
-#      print(part.no_of_sets)
-#      print(part.no_of_elem)
-# lhs =[]
-# lhs.append(Attribute('c'))
-# rhs =[]
-# rhs.append(Attribute('d'))
-# notfd = FD(lhs, rhs)
-# for t in maped.get_tables():
-#     print(t.db_row_count)
-#     if t.name == 'testing':
-#         print(t.pk)
-#         t.determine_nf()
-#         t.add_fd(notfd)
-#     result = proba.check_fds_hold(t.get_fds, t)
-#     print("FDs in table - added user: ")
-#     for fds in t.get_fds:
-#         print(", ".join(str(x.get_name) for x in fds.get_lhs) + ' -> ' + ", ".join(str(x.get_name) for x in fds.get_rhs))
-#     print("FDs in table that hold: ")
-#     for res in result:
-#         print(", ".join(str(x.get_name) for x in res.get_lhs) + ' -> ' + ", ".join(str(x.get_name) for x in res.get_rhs))
+#     print(part.column)
+#     print(part.no_equivalence_classes)
+#     print(part.dict_part)
