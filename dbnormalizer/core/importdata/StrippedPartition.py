@@ -10,6 +10,8 @@ class StrippedPartition:
         self.dict_part = {}
         self.column = column
         self.no_equivalence_classes = 0
+        self.column_set = set(self.column.split(sep = ','))
+
 
         id_row = 1
         for data in result_set:
@@ -39,5 +41,9 @@ class StrippedPartition:
                 self.no_of_sets += 1
         #self.error = self.no_of_elem - self.no_of_sets
         #empty dictionary for memory
-        #self.dict_part = {}
+        self.dict_part = {}
+
+    def construct_set_from_str(self, str_column):
+        list_split = str_column.split(sep = ',')
+        return set(list_split)
 

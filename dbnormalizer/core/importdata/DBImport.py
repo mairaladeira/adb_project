@@ -66,7 +66,10 @@ class DBImport:
             result = self.connection.execute("select count(*) as count from " + self.schema + "." + new_table.name)
             for row in result:
                 new_table.db_row_count = row['count']
-            self.fds_data = FDDetection(self.engine, self.schema, new_table)
+            if True: # here add the attribute for checking fds from data
+                fds_detect = FDDetection(self.engine, self.schema, new_table)
+                fds_detect.setup_table()
+                self.fds_data = fds_detect.find_fds()
             mapped.add_table(new_table)
         return mapped
 
@@ -164,8 +167,7 @@ class DBImport:
 # proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='tane', dbschema='public')
 # conn = proba.engine.connect()
 # maped = proba.map_tables()
-# diction = proba.fds_data.setup_table()
-# for part in diction:
-#     print(part.column)
-#     print(part.no_equivalence_classes)
-#     print(part.dict_part)
+# diction = proba.fds_data
+# for fd in diction:
+#     print(", ".join( str(attr.name) for attr in fd.lhs) + "->" + fd.rhs.name)
+

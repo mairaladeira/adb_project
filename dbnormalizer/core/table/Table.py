@@ -1,4 +1,5 @@
 __author__ = 'Maira'
+from itertools import combinations
 
 
 class Table:
@@ -69,10 +70,29 @@ class Table:
             list.append(att.name)
         return list
 
+    def get_attribute_string_list_no_pk(self):
+        list = []
+        for att in self.attributes:
+            if att.name not in self.pk:
+                list.append(att.name)
+        return list
+
     def get_attribute_string_list_combined(self):
         list = []
-        from itertools import combinations
-        L = self.get_attribute_string_list()
+        L = self.get_attribute_string_list_no_pk()
+        for x in range(1, len(L)):
+            l = [",".join(map(str, comb)) for comb in combinations(L, x)]
+            for el in l:
+                list.append(el)
+        return list
+
+    def get_attribute_list_no_primary(self):
+        list = []
+        L = []
+        for att in self.attributes:
+            if att.name not in self.pk:
+                L.append(att.name)
+        #L = self.get_attribute_string_list()
         for x in range(1, len(L)):
             l = [",".join(map(str, comb)) for comb in combinations(L, x)]
             for el in l:
