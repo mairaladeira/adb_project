@@ -231,6 +231,7 @@ function insertFDButton(domIdButton, data, callback){
                 $('#table-'+table).find('.fds-list').append(fd_elem);
                 edit_button_unbind_click();
                 edit_button_bind_click();
+                $('#normalization-content').addClass('hidden');
             }
 
         });
@@ -261,6 +262,7 @@ function editFDButton(domIdButton, data, callback){
                 $('.fd-elem[data-id='+id+']').replaceWith(fd_elem);
                 edit_button_unbind_click()
                 edit_button_bind_click();
+                $('#normalization-content').addClass('hidden');
             }
          });
      });
@@ -270,7 +272,6 @@ function deleteFDButton(domIdButton, domIdTable, callback){
     $("#"+domIdButton).bind("click", function(){
         var table = $("#"+domIdTable).html();
         var id = $(this).attr('data-id');
-        console.log('from dialog box'+ id);
         $.post("/"+domIdButton, {table: table, id: id}).done(function(data){
             $('.modal').removeClass('in').fadeOut(250);
             if(data == "success") {
@@ -283,6 +284,7 @@ function deleteFDButton(domIdButton, domIdTable, callback){
                         $(this).attr('data-id', new_data_id);
                     }
                 });
+                $('#normalization-content').addClass('hidden');
             }
         });
     });
@@ -393,7 +395,15 @@ function normalizeTable(domIdButton, callback){
     });
 }
 
-var textfiles = {}
+function downloadXML(domIdButton, callback){
+    $("#"+domIdButton).on("click", function() {
+        if(!$("#"+domIdButton).hasClass('disabled')){
+            window.open("/"+domIdButton);
+        }
+    });
+}
+
+var textfiles = {};
 function uploadTextfileButton(domIdButton, domIdInput, callback) {
     if (domIdButton in textfiles) throw new Error("nop.. already done! {" + domIdButton + "}");
 
@@ -401,7 +411,7 @@ function uploadTextfileButton(domIdButton, domIdInput, callback) {
         var reader = new FileReader();
         reader.onload = function(file){
             textfiles[domIdButton] = file.target.result;
-        }
+        };
         reader.readAsText(e.target.files[0]);
     });
 
@@ -533,6 +543,7 @@ function displayTables(data) {
         t.appendChild(content);
         table_list.append(t);
     });
+    $('#XMLDownload').removeClass('disabled');
     setTimeout(function(){
         $('.table-elem').find('.table-name').bind('click', function(e){
             var rightContent = $('#rightContent');
@@ -545,7 +556,6 @@ function displayTables(data) {
                 rightContent.addClass('hidden');
                 c.removeClass('visible');
                 $('#normalizer').addClass('disabled');
-                $('#normalizationDownload').addClass('disabled');
                 t_arrow.removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
                 c.fadeOut(250);
             } else {
@@ -635,7 +645,6 @@ function edit_button_bind_click(){
         var table = $(this).data('id');
         var parent = $(this).parent();
         var id = parent.data('id');
-        console.log('from fd'+id);
         $('#removeFDButton').attr('data-id', id);
         $(".modal-title #remove-fd-table-name").html( table );
         var delete_fd_confirm = $('#delete-fd-confirm');
@@ -755,9 +764,12 @@ function getNormalizationHTML(data){
     if(data['bcnf']){
         title = '3NF';
         bcnf_button.removeClass('hidden');
-        sql_download_button.removeClass('hidden');
     } else {
         bcnf_button.addClass('hidden');
+    }
+    if (connectionType == 'database'){
+        sql_download_button.removeClass('hidden');
+    } else {
         sql_download_button.addClass('hidden');
     }
     $('#normalization-tables').find('ul.tables').html('');
@@ -766,13 +778,15 @@ function getNormalizationHTML(data){
         var table = getNormalizedTableHTML(val);
         $('#normalization-tables').find('ul.tables').append(table);
     });
-
-    bcnf_button.on('click', function(){
+    bcnf_button.unbind('click');
+    sql_download_button.unbind('click');
+    bcnf_button.bind('click', function(){
         var tables = $('#normalization-tables').find('ul.tables');
         tables.html('');
         var warning = newHTMLElement('h6', {class:'error-message clear', text:'It is important to remember that some FDs are dropped with the BCNF decomposition of this table!'});
         $('#bcnfWarning').html('').append(warning);
         title = 'BCNF';
+        console.log(data);
         $('#normalization-nf').html(title);
         $.each(data['bcnf'], function(key, val){
             var table = getNormalizedTableHTML(val);
@@ -782,9 +796,8 @@ function getNormalizationHTML(data){
 
     sql_download_button.on('click', function(){
         var table = $('#table-detail-name').attr('data-id');
-        $.post("/downloadSQL", {table: table, type: title}).done(function(data){
-            console.log(data);
-        });
+        window.open("/downloadSQL?table="+table+"&type="+title+"");
+
     });
 }
 

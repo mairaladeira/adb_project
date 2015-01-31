@@ -1,5 +1,5 @@
 __author__ = 'Maira'
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 import webbrowser
 import threading
 import time
@@ -13,7 +13,7 @@ from dbnormalizer.core.normalizer.normalizer import Normalizer
 from dbnormalizer.core.importdata.manualImport import ManualImport
 from dbnormalizer.core.table.schema import Schema
 from dbnormalizer.core.util.DBGenerateScript import DBGenerateScript
-
+from dbnormalizer.core.util.XMLExport import XMLExport
 
 app = Flask(__name__)
 schema = []
@@ -33,17 +33,40 @@ def open_browser():
 def hello():
     return render_template('index.html')
 
-@app.route("/<button>", methods=["GET"])
+@app.route("/<button>")
 def click(button):
     """
     Simple button click, only with GET
     :param button: the domId of the button that was clicked
     :return:
     """
-    if button == "insertData":
-        return "lol"
-
-    return "test"
+    print(button)
+    try:
+        if button == 'downloadSQL':
+            decomposition_type = request.args['type']
+            table_name = request.args['table']
+            new_schema = {}
+            if decomposition_type == '3NF' or decomposition_type == '3nf':
+                new_schema = normalized_schemas[table_name].get_nf3_schema()
+            elif decomposition_type == 'BCNF' or decomposition_type == 'bcnf':
+                new_schema = normalized_schemas[table_name].get_bcnf_schema()
+            old_schema = Schema('old_schema')
+            table_obj = schema.get_table_by_name(table_name)
+            old_schema.add_table(table_obj)
+            gen = DBGenerateScript(old_schema, new_schema, db_c['username'], db_c['pwd'], db_c['url'], db_c['db'])
+            file = gen.generate_script()
+            response = make_response(file)
+            response.headers["Content-Disposition"] = "attachment; filename="+table_name+"_decomposition.sql"
+            return response
+        elif button == 'XMLDownload':
+            xml_export = XMLExport(schema)
+            xml_file = xml_export.generate_xml()
+            response = make_response(xml_file)
+            response.headers["Content-Disposition"] = "attachment; filename="+schema.get_name+".xml"
+            return response
+        return "test"
+    except Exception as e:
+        print(e)
 
 
 @app.route("/<button>", methods=["POST"])
@@ -193,22 +216,6 @@ def upload(button):
                 normalized_schemas[table_name] = normalization
                 js_object = get_normalized_tables_js_object({'3nf': table})
             return js_object
-        elif button == 'downloadSQL':
-            decomposition_type = request.form['type']
-            table_name = request.form['table']
-            new_schema = {}
-            if decomposition_type == '3NF' or decomposition_type == '3nf':
-                new_schema = normalized_schemas[table_name].get_nf3_schema()
-            elif decomposition_type == 'BCNF' or decomposition_type == 'bcnf':
-                new_schema = normalized_schemas[table_name].get_bcnf_schema()
-
-            old_schema = Schema('old_schema')
-            table_obj = schema.get_table_by_name(table_name)
-            old_schema.add_table(table_obj)
-            gen = DBGenerateScript(old_schema, new_schema, db_c['username'], db_c['pwd'], db_c['url'], db_c['db'])
-            script = gen.generate_script()
-            print(script)
-            return 'hi'
         return "Undefined button: " + button
     except Exception as e:
         print(e)

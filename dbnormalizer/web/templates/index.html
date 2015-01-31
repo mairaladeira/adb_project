@@ -35,7 +35,7 @@
             </div>
 
             <div class="btn-group">
-                <button type="button" class="btn btn-default disabled" id="normalizationDownload">Download Normalisation</button>
+                <button type="button" class="btn btn-default disabled" id="XMLDownload">Download Current Schema</button>
             </div>
 
         </div>
@@ -67,8 +67,8 @@
 
                     </ul>
                 </div>
-                <button type="button" class="btn btn-primary right" id="getBCNF">Get BCNF</button>
-                <button type="button" class="btn btn-primary right" id="getSQL">Download SQL</button>
+                <a type="button" class="btn btn-primary right" id="getBCNF" href="#normalization-content">Get BCNF</a>
+                <a type="button" class="btn btn-primary right" id="getSQL" href="#normalization-content">Download SQL</a>
             </div>
         </div>
     </div>
@@ -314,9 +314,9 @@
 
         normalizeTable('normalizer', function(result){});
 
-        insertDataManually('insertmanual', function(result) {
+        insertDataManually('insertmanual', function(result) {});
 
-        })
+        downloadXML('XMLDownload', function(result){});
     });
 
 

@@ -44,16 +44,16 @@ class XMLExport:
                         att_fd = SubElement(rhs, 'attribute')
                         att_fd.text = atr_rhs.name
             self.xml = self.prettify(conf)
-
-            filename = "xml_mapping_" + self.schema.name + ".xml"
-            xml_file = open(filename, mode='w')
-            xml_file.write(self.xml)
-            xml_file.close()
-            import os.path
-            import inspect
-            path_to_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-            path_to_file = path_to_dir + "\\" + filename
-            return path_to_file
+            return self.xml
+            #filename = "xml_mapping_" + self.schema.name + ".xml"
+            #xml_file = open(filename, mode='w')
+            #xml_file.write(self.xml)
+            #xml_file.close()
+            #import os.path
+            #import inspect
+            #path_to_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+            #path_to_file = path_to_dir + "\\" + filename
+            #return path_to_file
         except Exception as e:
             print('Error creating new xml file: ' + str(e))
             self.error = str(e.args[0])

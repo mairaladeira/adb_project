@@ -7,6 +7,10 @@ class Schema:
         self.tables = []
         self.import_from_db = False
 
+    @property
+    def get_name(self):
+        return self.name
+
     def add_table(self, table):
         self.tables.append(table)
 

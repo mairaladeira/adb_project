@@ -91,21 +91,11 @@ class DBGenerateScript:
         #script2 = str(self.metadata_old.drop_all(self.engine, checkfirst=False))
         self.generate_DML_old_to_new()
         self.generate_DDL_drop_old()
-        try:
-            filename = "sql_decomposition_script_" + self.normalized_schema.name + ".sql"
-            sql_file = open(filename, mode='w')
-            for q in self.sql_list:
-                self.script += q
-                sql_file.write(q)
-            sql_file.close()
-            import os.path
-            import inspect
-            path_to_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-            path_to_file = path_to_dir + "\\" + filename
-            return path_to_file
-        except Exception as e:
-            print('Error creating new file: ' + str(e))
-            self.error = str(e.args[0])
+        for q in self.sql_list:
+            self.script += q
+
+
+        return self.script
 
 # node = Table('node', metadata,
 #     Column('node_id', Integer, primary_key=True),
@@ -115,7 +105,7 @@ class DBGenerateScript:
 # )
 
 # metadata = MetaData()
-# element = Table('element' metadata,
+# element = Table('element', metadata,
 #         ForeignKeyConstraint(
 #         ['parent_node_id'],
 #         ['node.node_id'],
@@ -130,7 +120,7 @@ class DBGenerateScript:
 # username=password= 'postgres'
 # url = 'localhost:5432'
 # database = 'adb_test'
-# gen = DBGenerateScript(maped, maped, username, password, url, database)
+# gen = DBGenerateScript(maped_old, maped_new, username, password, url, database)
 # script = gen.generate_script()
 # print(script)
 # for q in gen.sql_list:
