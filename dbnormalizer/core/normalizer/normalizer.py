@@ -254,7 +254,7 @@ class Normalizer:
                             new_tables.remove(t1)
                     j += 1
                 i += 1
-        
+
         #store both decompositions (up to nf3 and up to bcnf)
         self.set_foreign_keys(tables_nf3)
         self.set_foreign_keys(new_tables)
