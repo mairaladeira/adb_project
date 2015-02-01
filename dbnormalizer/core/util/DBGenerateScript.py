@@ -24,6 +24,12 @@ class DBGenerateScript:
     def generate_DDL_create_new(self):
         #generate the DDL statements to create new tables and add foreign keys
  #       script_new = ''
+        #ensure schema consistency
+        for tab in self.normalized_schema.get_tables():
+            for attr in tab.get_attributes:
+                if attr.type == "":
+                    for tab_old in self.old_schema.get_tables():
+                        attr.type = tab_old.get_attribute_by_name(attr.get_name).type
         for tab in self.normalized_schema.get_tables():
             table = Table(tab.get_name, self.metadata_new)
             for attr in tab.get_attributes:
@@ -37,16 +43,16 @@ class DBGenerateScript:
                     fkcon = ForeignKeyConstraint(columns=fk.attribute, refcolumns=name)
                     table.append_constraint(fkcon)
                #DDL preserve foreign keys
-        for tab_old in self.old_schema.get_tables():
-            for fk in tab_old.imported_fk:
-                # for attr_old in tab_old.get_attributes:
-                #     for attr_new in tab_new.get_attributes:
-                #if attr_old.name == attr_new.name:
-                    for ref in fk.referenced_attribute:
-                        name = []
-                        name.append(fk.referenced_table + '.' + ref)
-                        fkcon = ForeignKeyConstraint(columns=fk.attribute, refcolumns=name, use_alter=True, name= ref+'_'+tab_old.name + '_fk')
-                        table.append_constraint(fkcon)
+        # for tab_old in self.old_schema.get_tables():
+        #     for fk in tab_old.imported_fk:
+        #         # for attr_old in tab_old.get_attributes:
+        #         #     for attr_new in tab_new.get_attributes:
+        #         #if attr_old.name == attr_new.name:
+        #             for ref in fk.referenced_attribute:
+        #                 name = []
+        #                 name.append(fk.referenced_table + '.' + ref)
+        #                 fkcon = ForeignKeyConstraint(columns=fk.attribute, refcolumns=name, use_alter=True, name= ref+'_'+tab_old.name + '_fk')
+        #                 table.append_constraint(fkcon)
                     #print(str(fkcon.compile(self.engine)))
 
 
@@ -87,8 +93,6 @@ class DBGenerateScript:
 
     def generate_script(self):
         self.generate_DDL_create_new()
-        script2 = 'dml'
-        #script2 = str(self.metadata_old.drop_all(self.engine, checkfirst=False))
         self.generate_DML_old_to_new()
         self.generate_DDL_drop_old()
         for q in self.sql_list:
@@ -97,30 +101,34 @@ class DBGenerateScript:
 
         return self.script
 
-# node = Table('node', metadata,
-#     Column('node_id', Integer, primary_key=True),
-#     Column('primary_element', Integer,
-#         ForeignKey('element.element_id', use_alter=True, name='fk_node_element_id')
-#     )
-# )
-
-# metadata = MetaData()
-# element = Table('element', metadata,
-#         ForeignKeyConstraint(
-#         ['parent_node_id'],
-#         ['node.node_id'],
-#         use_alter=True,
-#         name='fk_element_parent_node_id'))
-# # engine = create_engine('postgresql://adb:adb@doesntmatter/base', strategy='mock', executor= lambda sql, *multiparams, **params: print (sql, ";"))
 # from dbnormalizer.core.importdata.DBImport import DBImport
+# from dbnormalizer.core.table.Attr import Attribute
+# from dbnormalizer.core.table.FD import FD
+# from dbnormalizer.core.normalizer.NF import NF
+# from dbnormalizer.core.normalizer.normalizer import Normalizer
+# from dbnormalizer.core.table.schema import Schema
 # proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='adb_test', dbschema='test')
-# maped = proba.map_tables()
-# for tab in maped.get_tables():
-#     tab.f_keys = tab.imported_fk
+# maped_old = proba.map_tables()
+# table = maped_old.get_table_by_name("new")
+# a1 = Attribute("anew")
+# a2 = Attribute("cnew")
+# lhs = []
+# lhs.append(a1)
+# rhs = []
+# rhs.append(a2)
+# table.add_fd(FD(lhs,rhs))
+# nf = NF(table)
+# current_nf = nf.determine_nf()
+# normalization = Normalizer(nf)
+# normalization.decomposition()
+# schema  = Schema("new")
+# table_bcnf = normalization.get_new_tables_bcnf()
+# for tab in table_bcnf:
+#     schema.add_table(tab)
 # username=password= 'postgres'
 # url = 'localhost:5432'
 # database = 'adb_test'
-# gen = DBGenerateScript(maped_old, maped_new, username, password, url, database)
+# gen = DBGenerateScript(schema, maped_old, username, password, url, database)
 # script = gen.generate_script()
 # print(script)
 # for q in gen.sql_list:

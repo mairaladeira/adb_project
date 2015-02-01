@@ -43,7 +43,7 @@ class FDDetection:
                             for col in part.column_set:
                                 lhs.append(Attribute(col))
                             rhs.append(Attribute(attr))
-                            fd_list.append(FD(lhs, rhs))
+                            fd_list.append(FD(lhs, rhs, imported=True))
         return fd_list
 
     def find_partition_by_set(self, part_set):

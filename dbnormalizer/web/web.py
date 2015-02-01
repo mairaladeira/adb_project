@@ -50,10 +50,11 @@ def click(button):
                 new_schema = normalized_schemas[table_name].get_nf3_schema()
             elif decomposition_type == 'BCNF' or decomposition_type == 'bcnf':
                 new_schema = normalized_schemas[table_name].get_bcnf_schema()
-            old_schema = Schema('old_schema')
+            old_schema = Schema(schema.name)
             table_obj = schema.get_table_by_name(table_name)
             old_schema.add_table(table_obj)
-            gen = DBGenerateScript(old_schema, new_schema, db_c['username'], db_c['pwd'], db_c['url'], db_c['db'])
+            new_schema.name = old_schema.name
+            gen = DBGenerateScript(new_schema, old_schema, db_c['username'], db_c['pwd'], db_c['url'], db_c['db'])
             file = gen.generate_script()
             response = make_response(file)
             response.headers["Content-Disposition"] = "attachment; filename="+table_name+"_decomposition.sql"

@@ -15,7 +15,7 @@ from dbnormalizer.core.importdata.FDDetection import FDDetection
 class DBImport:
     """ class used to import the db metadata from a postgresql database
     """
-    def __init__(self, url, username, password, dbschema, database, check_fds_from_data=False):
+    def __init__(self, url, username, password, dbschema, database, check_fds_from_data=True):
         self.username = username
         self.password = password
         self.database = database
@@ -25,7 +25,7 @@ class DBImport:
         self.metadata = None
         self.inspector = None
         self.error = None
-        self.fds_data = None
+        #self.fds_data = None
         self.check_fds_from_data = check_fds_from_data
         try:
             self.engine = create_engine('postgresql://' + username + ':' + password + '@'+url+'/' + database)
@@ -70,7 +70,9 @@ class DBImport:
             if self.check_fds_from_data:
                 fds_detect = FDDetection(self.engine, self.schema, new_table)
                 fds_detect.setup_table()
-                self.fds_data = fds_detect.find_fds()
+                fds_data = fds_detect.find_fds()
+                for fd in fds_data:
+                    new_table.fds.append(fd)
             mapped.add_table(new_table)
         return mapped
 

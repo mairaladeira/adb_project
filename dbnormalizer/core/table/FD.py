@@ -2,9 +2,10 @@ __author__ = 'Maira'
 
 
 class FD:
-    def __init__(self, lhs, rhs):
+    def __init__(self, lhs, rhs, imported=False):
         self.lhs = lhs
         self.rhs = rhs
+        self.imported = imported
 
     @property
     def get_lhs(self):
