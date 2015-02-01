@@ -15,7 +15,7 @@ from dbnormalizer.core.importdata.FDDetection import FDDetection
 class DBImport:
     """ class used to import the db metadata from a postgresql database
     """
-    def __init__(self, url, username, password, dbschema, database):
+    def __init__(self, url, username, password, dbschema, database, check_fds_from_data=False):
         self.username = username
         self.password = password
         self.database = database
@@ -26,6 +26,7 @@ class DBImport:
         self.inspector = None
         self.error = None
         self.fds_data = None
+        self.check_fds_from_data = check_fds_from_data
         try:
             self.engine = create_engine('postgresql://' + username + ':' + password + '@'+url+'/' + database)
             self.connection = self.engine.connect()
@@ -66,7 +67,7 @@ class DBImport:
             result = self.connection.execute("select count(*) as count from " + self.schema + "." + new_table.name)
             for row in result:
                 new_table.db_row_count = row['count']
-            if True: # here add the attribute for checking fds from data
+            if self.check_fds_from_data:
                 fds_detect = FDDetection(self.engine, self.schema, new_table)
                 fds_detect.setup_table()
                 self.fds_data = fds_detect.find_fds()
@@ -164,10 +165,10 @@ class DBImport:
             self.error = str(e.args[0])
 
 # from dbnormalizer.core.importdata.StrippedPartition import StrippedPartition
-# proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='tane', dbschema='public')
+# proba = DBImport(username='postgres', password='postgres', url='localhost:5432', database='tane', dbschema='public', check_fds_from_data=True)
 # conn = proba.engine.connect()
 # maped = proba.map_tables()
 # diction = proba.fds_data
 # for fd in diction:
-#     print(", ".join( str(attr.name) for attr in fd.lhs) + "->" + fd.rhs.name)
+#     print(", ".join( str(attr.name) for attr in fd.lhs) + "->" + ", ".join( str(attr.name) for attr in fd.rhs))
 

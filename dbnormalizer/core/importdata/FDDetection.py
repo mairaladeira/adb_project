@@ -38,10 +38,11 @@ class FDDetection:
                     union_part = self.find_partition_by_set(union)
                     if union_part:
                         if part.no_equivalence_classes == union_part.no_equivalence_classes:
-                            lhs =[]
+                            lhs = []
+                            rhs = []
                             for col in part.column_set:
                                 lhs.append(Attribute(col))
-                            rhs = Attribute(attr)
+                            rhs.append(Attribute(attr))
                             fd_list.append(FD(lhs, rhs))
         return fd_list
 
