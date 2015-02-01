@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+		<schema name="DATABASE">
+			<tableInfo>
+				<table name="DATABASE">
+					<attributes>
+						<attribute>PatientNumber</attribute>
+						<attribute>PatientName</attribute>
+						<attribute>AppointementID</attribute>
+                        <attribute>Time</attribute>
+                        <attribute>Doctor</attribute>
+					</attributes>
+					<fds>
+						<fd>
+							<lhs>
+								<attribute>PatientNumber</attribute>
+							</lhs>
+							<rhs>
+						        <attribute>PatientName</attribute>
+							</rhs>
+						</fd>
+						<fd>
+							<lhs>
+								<attribute>PatientNumber</attribute>
+						        <attribute>AppointementID</attribute>
+							</lhs>
+							<rhs>
+						        <attribute>Time</attribute>
+                                <attribute>Doctor</attribute>
+							</rhs>
+						</fd>
+						<fd>
+							<lhs>
+								<attribute>Time</attribute>
+							</lhs>
+							<rhs>
+						        <attribute>AppointementID</attribute>
+							</rhs>
+						</fd>
+					</fds>
+				</table>
+			</tableInfo>
+		</schema>
+</configuration>
