@@ -155,10 +155,12 @@ def upload(button):
             return "success"
         elif button == "removeFDButton":
             table_name = request.form['table']
-            fd_id = request.form['id']
+            fd_lhs = request.form['lhs']
+            fd_rhs = request.form['rhs']
+            fds_lhs_list = fd_lhs.split(',')
+            fds_rhs_list = fd_rhs.split(',')
             table = schema.get_table_by_name(table_name)
-            fds = table.get_fds
-            del fds[int(fd_id)]
+            table.delete_fds(fds_lhs_list, fds_rhs_list)
             return "success"
         elif button == "minimalCover":
             table_name = request.form['table']

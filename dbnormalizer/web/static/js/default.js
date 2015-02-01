@@ -284,7 +284,24 @@ function deleteFDButton(domIdButton, domIdTable, callback){
     $("#"+domIdButton).bind("click", function(){
         var table = $("#"+domIdTable).html();
         var id = $(this).attr('data-id');
-        $.post("/"+domIdButton, {table: table, id: id}).done(function(data){
+        var fd = $('#table-'+table).find('.fd-elem[data-id='+id+']');
+        var lhs = '';
+        var rhs = '';
+        fd.find('.fds_lhs .fd').each(function(k){
+            if (k == 0){
+                lhs += $(this).html();
+            } else {
+                lhs += ','+$(this).html()
+            }
+        });
+        fd.find('.fds_rhs .fd').each(function(k){
+            if (k == 0){
+                rhs += $(this).html();
+            } else {
+                rhs += ','+$(this).html()
+            }
+        });
+        $.post("/"+domIdButton, {table: table, lhs: lhs, rhs: rhs}).done(function(data){
             $('.modal').removeClass('in').fadeOut(250);
             if(data == "success") {
                 $('#table-'+table).find('.fd-elem').each(function(){
@@ -400,7 +417,6 @@ function normalizeTable(domIdButton, callback){
                     $('#no-normalization').remove();
                 }
                 data = JSON.parse(data);
-                console.log(data);
                 getNormalizationHTML(data);
             });
         }

@@ -29,7 +29,6 @@ setup(
     url='https://github.com/mairaladeira/adb_project',
     install_requires=[
                       'SQLAlchemy>=0.8.2',
-                      'pyparsing>=2.0.3',
                       'flask>=0.10.1',
                       'psycopg2>=2.5.4',
                     ],

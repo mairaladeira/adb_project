@@ -15,6 +15,14 @@ Source code for the Database Normalizer project for the Advanced Databases class
    * Maira Machado Ladeira,
    * Mehreen Ikram
 
+This project requires:
+```
+python 3.4
+pip
+psycopg2 2.5.4
+PostgresSQL
+```
+
 For install setuptools on the first time:
 ```
 python ez_setup.py
@@ -34,3 +42,10 @@ For execute the project:
 ```
 python dbnormalizer
 ```
+
+The online version of the app is available on: http://85.25.215.113:5000/
+
+The credentials for the online postgres version are available on the file postgres_databases_examples.txt
+that for security reason is not online
+
+

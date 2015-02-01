@@ -98,3 +98,8 @@ class Table:
             for el in l:
                 list.append(el)
         return list
+
+    def delete_fds(self, lhs_list_n, rhs_list_n):
+        for f in self.fds:
+            if set([a.get_name for a in f.get_lhs]) == set(lhs_list_n) and set([a.get_name for a in f.get_rhs]) == set(rhs_list_n):
+                self.fds.remove(f)
