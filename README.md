@@ -45,6 +45,8 @@ python dbnormalizer
 
 The online version of the app is available on: http://85.25.215.113:5000/
 
+Github link: https://github.com/mairaladeira/adb_project
+
 The credentials for the online postgres version are available on the file postgres_databases_examples.txt
 that for security reason is not online
 
