@@ -240,6 +240,21 @@ class Normalizer:
         for table in tables_nf3:
             tables_bcnf = self.decomposition_bcnf(table)
             new_tables += tables_bcnf
+
+        #remove bcnf unnecessary tables
+        if self.nf3_not_bcnf:
+            i = 0
+            for t1 in new_tables:
+                t1_attr_names = [a.get_name for a in t1.get_attributes]
+                j = 0
+                for t2 in new_tables:
+                    t2_attr_names = [a.get_name for a in t2.get_attributes]
+                    if j > i and set(t1_attr_names) < set(t2_attr_names):
+                        if t1 in new_tables:
+                            new_tables.remove(t1)
+                    j += 1
+                i += 1
+        
         #store both decompositions (up to nf3 and up to bcnf)
         self.set_foreign_keys(tables_nf3)
         self.set_foreign_keys(new_tables)
@@ -275,7 +290,7 @@ class Normalizer:
 
 #from dbnormalizer.core.importdata.XMLImport import XMLImport
 
-#test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/test_6.xml', True)
+#test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/Alex_3nf_2.xml', True)
 #test.init_objects()
 #schema = test.get_schema()
 #table_test = schema.get_table_by_name('TEST')

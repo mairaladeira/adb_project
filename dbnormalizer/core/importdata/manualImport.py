@@ -34,8 +34,12 @@ class ManualImport:
         attributes_list = []
         fds_list = []
         for attr in attributes:
-            attribute = Attribute(attr)
-            attributes_list.append(attribute)
+            attrs = attr.replace(')', '')
+            attrs = attrs.replace('(', '')
+            attrs = attrs.split(',')
+            for at in attrs:
+                attribute = Attribute(at)
+                attributes_list.append(attribute)
         for fd in fds:
             lhs_list = []
             rhs_list = []
@@ -56,7 +60,9 @@ class ManualImport:
         return t
 
 
-#test_data = {'Schema': 'Test', 'Tables': [{'fds': [{'lhs': ['attr1'], 'rhs': ['attr2']}, {'lhs': ['attr1'], 'rhs': ['attr3']}, {'lhs': ['attr3'], 'rhs': ['attr2']}], 'name': 'Test1', 'attributes': ['attr1', 'attr2', 'attr3']}]}
+#test_data = {'Schema': 'Test', 'Tables': [{'fds': [{'lhs': ['attr1'], 'rhs': ['attr2']}, {'lhs': ['attr1'], 'rhs': ['attr3']}, {'lhs': ['attr3'], 'rhs': ['attr2']}], 'name': 'Test1', 'attributes': ['attr1', '(attr2, attr4)', 'attr3']}]}
 #mi = ManualImport(test_data)
 #schema = mi.get_schema()
-#print(schema)
+#tables = schema.get_tables()
+#for t in tables:
+    #print([a.get_name for a in t.get_attributes])

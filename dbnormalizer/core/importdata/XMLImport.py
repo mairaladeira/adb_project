@@ -4,7 +4,7 @@ from dbnormalizer.core.table.schema import Schema
 from dbnormalizer.core.table.Table import Table
 from dbnormalizer.core.table.Attr import Attribute
 from dbnormalizer.core.table.FD import FD
-
+import re
 
 # this class parses an XML file and returns the schema for the normalizer.
 # If the XML file is not on the correct format, the system will trough an exception
@@ -16,6 +16,7 @@ class XMLImport:
         self.schema = {}
         self.tables = []
         self.attributes = {}
+        self.intermediateTables = {}
 
     def readfile(self):
         if self.test:
@@ -46,7 +47,7 @@ class XMLImport:
         try:
             for table in s.findall('.//table'):
                 table_name = table.get('name')
-                t['attributes'] = self.init_attributes(table)
+                t['attributes'] = self.init_attributes(table, table_name)
                 self.attributes[table_name] = []
                 for attr in t['attributes']:
                     self.attributes[table_name].append(attr.get_name)
@@ -60,17 +61,20 @@ class XMLImport:
             print('init_tables')
             print(e)
 
-    @staticmethod
-    def init_attributes(table):
+    def init_attributes(self, table, table_name):
         attr = set()
         try:
             for attributes in table.findall('.//attributes'):
                 for a in attributes.findall('.//attribute'):
-                    a = Attribute(a.text)
-                    attr.add(a)
+                    attrs = a.text.replace(')', '')
+                    attrs = attrs.replace('(', '')
+                    attrs = attrs.split(',')
+                    for at in attrs:
+                        at = Attribute(at)
+                        attr.add(at)
             return attr
         except Exception as e:
-            print('init_attributes' + str(e))
+            print('init_attributes ' + str(e))
 
     def check_fds_attributes(self, table, table_name):
         attr = []
@@ -85,6 +89,35 @@ class XMLImport:
         except Exception as e:
             print('init_attributes' + str(e))
 
+    def handle_intermediate_tables_fds(self, lhs, rhs, table_name):
+        lhs_list = []
+        rhs_list = []
+        add_to_main_table = True
+        for attribute in lhs.findall('.//attribute'):
+            a = attribute.text
+            lhs_list.append(a)
+            if a not in self.attributes[table_name]:
+                add_to_main_table = False
+        for attribute in rhs.findall('.//attribute'):
+            a = attribute.text
+            rhs_list.append(a)
+            if a not in self.attributes[table_name]:
+                add_to_main_table = False
+
+        if not add_to_main_table:
+            attrs = lhs_list + rhs_list
+            for inttable in self.intermediateTables[table_name]:
+                common_elem = list(set(inttable) & set(attrs))
+                print(common_elem)
+                if len(common_elem) > 0:
+                    print('table: '+str(inttable)+' attrs: '+str(attrs))
+
+            #print(attrs)
+
+        #print(str(lhs_list)+'->'+str(rhs_list))
+
+        return add_to_main_table
+
     def init_fds(self, table, table_name):
         fds = []
         try:
@@ -95,3 +128,52 @@ class XMLImport:
             return fds
         except Exception as e:
             print('get function dependencies exception: '+ str(e))
+
+    def treat_attr(self, attr, table_name):
+        t = attr.split(',')
+        if len(t) == 1:
+            return attr
+        self.getIntermediateTables(t, table_name)
+        return False
+
+    def getIntermediateTables(self, t, table_name):
+        tables = []
+        attr = []
+        added_elem = True
+        for a in t:
+            if '(' in a:
+                a = a.replace('(', '')
+                if not added_elem:
+                    tables.append(attr)
+                added_elem = False
+                attr = [a]
+            elif ')' in a:
+                a = a.replace(')', '')
+                attr.append(a)
+                tables.append(attr)
+                attr = []
+                added_elem = True
+
+            else:
+                added_elem = False
+                attr.append(a)
+
+        self.intermediateTables[table_name] = []
+        i = 0
+        for t in tables:
+            tb = Table(table_name+str(i))
+            tb_at = []
+            self.intermediateTables[table_name].append(t)
+            for a in t:
+                at = Attribute(a)
+                tb_at.append(at)
+            tb.set_attributes(tb_at)
+            i += 1
+            self.tables.append(tb)
+
+#test = XMLImport('/Users/mairamachadoladeira/PycharmProjects/adb_project/examples/presentation_example2.xml', True)
+#test.init_objects()
+#schema = test.get_schema()
+#tables = schema.get_tables()
+#for t in tables:
+    #print(t.get_attributes)
